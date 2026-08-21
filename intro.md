@@ -1,4 +1,4 @@
-# EPS 164: Introduction to Seismology
+# EPS 166: Crustal Deformation
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Deploy Book](https://github.com/amtseismo/EPS164/actions/workflows/deploy.yml/badge.svg)](https://github.com/amtseismo/EPS164/actions/workflows/deploy.yml)
