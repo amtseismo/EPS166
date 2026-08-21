@@ -14,62 +14,11 @@ project:
     - file: intro.md
 
     # --- Modules ---
-    - title: Week 1 — Data Foundations
+    - title: Week 1 — A Deforming Earth
       children:
         - file: lectures/01_seismic_instrumentation
         - file: demos/01_seismometer_response_demo
         - file: notebooks/01_data_fourier_practice_strengthened
-
-    - title: Week 2 — Stress & Strain
-      children:
-        - file: lectures/02_stress_strain
-        - file: demos/02_principal_stress_directions_demo
-        - file: demos/02_strain_rotation_demo
-        - file: notebooks/02_stress_strain_practice
-
-    - title: Week 3 — The Wave Equation
-      children:
-        - file: lectures/03_seismic_wave_equation
-        - file: demos/03_1D_finite_difference_demo_with_widgets
-        - file: notebooks/03_wave_equation_practice
-		
-    - title: Week 4 — Travel Times
-      children:
-        - file: lectures/04_ray_theory
-        - file: demos/04_travel_time_curve_demo
-        - file: notebooks/04_ray_theory_practice
-
-    - title: Week 5 — Inversion
-      children:
-        - file: lectures/05_inversion
-        - file: demos/05_Resolution_of_the_Tomography_Problem
-        - file: notebooks/05_earthquake_location
-				
-    - title: Week 6 — Amplitudes
-      children:
-        - file: lectures/06_amplitudes
-		
-    - title: Week 7 — Surface Waves and Ambient Noise
-      children:
-        - file: lectures/07_surface_waves
-        - file: demos/07_noise_correlation_demo
-        - file: notebooks/07_surface_wave_practice
-
-    - title: Week 8 — Beachballs, radiation patterns, and Moment Tensors
-      children:
-        - file: lectures/08_sources
-        - file: demos/08a_demo_covseisnet
-        - file: demos/08b_plot_pdf_example
-        - file: demos/08_beachball_demo
-
-    - title: Week 9 — Earthquakes and Source Theory
-      children:
-        - file: lectures/09_sources_continued
-        - file: notebooks/09_source_theory_practice
-		
-    - title: Week 10 — Seismological Frontiers
-      children:
-        - file: lectures/10_frontiers
 
 #
 #    # --- Optional ---
