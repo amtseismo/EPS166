@@ -3,8 +3,8 @@ version: 1
 
 project:
   id:
-  title: EPS 164 Seismology Course Materials
-  description: Notes and notebooks for EPS 164
+  title: EPS 166 Crustal Deformation Course Materials
+  description: Notes and notebooks for EPS 166
   keywords:
     - earthquake
     - seismology
@@ -17,9 +17,17 @@ project:
     - title: Week 1 — A Deforming Earth
       children:
         - file: lectures/01_seismic_instrumentation
-        - file: demos/01_seismometer_response_demo
-        - file: notebooks/01_data_fourier_practice_strengthened
-
+		
+    - title: Week 2 — GNSS
+      children:
+        - file: lectures/02_GNSS1
+        - file: notebooks/02_gnss_positioning
+        - file: lectures/03_GNSS2
+		
+    - title: Week 3 — GNSS
+      children:
+        - file: lectures/04_GNSS3
+		
 #
 #    # --- Optional ---
 #    - title: Optional — Advanced Topics
