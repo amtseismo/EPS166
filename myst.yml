@@ -20,14 +20,18 @@ project:
 		
     - title: Week 2 — GNSS
       children:
-        - file: lectures/02_GNSS1
-        - file: notebooks/02_gnss_positioning
-        - file: lectures/03_GNSS2
+        - file: lectures/01_GNSS1
+        - file: notebooks/01_gnss_positioning
+        - file: lectures/02_GNSS2
+        - file: notebooks/02_gnss_timeseries
 		
     - title: Week 3 — GNSS
       children:
-        - file: lectures/04_GNSS3
-		
+        - file: lectures/03_GNSS3
+        - file: notebooks/03_gnss_strain	
+        - file: lectures/04_seismic_cycle
+        - file: notebooks/04_seismic_cycle	
+			
 #
 #    # --- Optional ---
 #    - title: Optional — Advanced Topics
