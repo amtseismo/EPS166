@@ -32,7 +32,7 @@ The central question for this lecture is:
 
 > How does GNSS work?
 
-```{figure} ../figures/02_gnss_cascadia.png
+```{figure} ../figures/01_gnss_cascadia.png
 ---
 width: 500px
 alt: Map of northern Cascadia showing GNSS velocities directed northeast near the coast and decreasing toward the continental interior.
@@ -72,7 +72,7 @@ $$
 
 Measurements from multiple satellites are then combined to determine the receiver's location through **trilateration**.
 
-```{figure} ../figures/02_gps_trilateration.jpg
+```{figure} ../figures/01_gps_trilateration.jpg
 ---
 width: 700px
 ---
@@ -85,10 +85,10 @@ Each satellite constrains the receiver to locations at a particular distance fro
 
 **GPS** refers specifically to the satellite-navigation system operated by the United States. **GNSS** is the broader term for global satellite-navigation systems, including:
 
-- GPS: 24+ satellites, 6 orbital planes, 55° inclination, ~20,200 km altitude
-- GLONASS: First launched in 1982, full global coverage restored in 2011, Satellites have slightly different frequencies
-- Galileo: Civilian-focused, full constellation in 2023
-- BeiDou: BeiDou-3 provides global coverage since 2020, earlier versions have preferential coverage over China
+- **GPS**: 24+ satellites, 6 orbital planes, 55° inclination, ~20,200 km altitude
+- **GLONASS**: First launched in 1982, full global coverage restored in 2011, Satellites have slightly different frequencies
+- **Galileo**: Civilian-focused, full constellation in 2023
+- **BeiDou**: BeiDou-3 provides global coverage since 2020, earlier versions have preferential coverage over China
 
 Modern receivers can combine signals from multiple constellations. More available satellites can provide:
 
@@ -103,7 +103,7 @@ Each GNSS system contains three major segments:
 - **control segment:** ground stations that monitor satellite orbits and clocks
 - **user segment:** receivers and processing systems
 
-```{figure} ../figures/02_sky_satellites.png
+```{figure} ../figures/01_sky_satellites.png
 ---
 width: 800px
 ---
@@ -128,7 +128,7 @@ The 55$^\circ$ inclination is a compromise that provides broad global coverage w
 
 As the satellites rise and set, receivers observe signals from different directions, providing continuous coverage and changing satellite geometry.
 
-```{figure} ../figures/02_gnss_constellations.png
+```{figure} ../figures/01_gnss_constellations.png
 ---
 width: 800px
 alt: Orbits of active global and regional navigation satellites
@@ -146,7 +146,7 @@ Consists of **Master Control Station (MCS)**, monitoring stations, and ground an
 - The monitoring stations track each satellite and have atomic clocks for precise timing.
 - The ground antennas upload navigation messages and corrections to the satellites.
 
-```{figure} ../figures/02_control_segment.png
+```{figure} ../figures/01_control_segment.png
 ---
 width: 800px
 ---
@@ -172,7 +172,7 @@ A GPS signal combines three components:
    - describes the satellite's orbit and clock
    - provides the information needed to calculate satellite position
 
-```{figure} ../figures/02_gps_signal_structure.jpg
+```{figure} ../figures/01_gps_signal_structure.jpg
 ---
 width: 800px
 ---
@@ -216,7 +216,7 @@ The receiver:
 3. finds the shift that produces the strongest correlation
 4. converts that time shift into an apparent range
 
-The C/A code repeats every millisecond and has a chip rate of 1.023 million chips per second.
+The C/A code repeats **every millisecond** and has a chip rate of 1.023 million chips per second.
 
 One chip corresponds to approximately:
 
@@ -226,15 +226,6 @@ $$
 $$
 
 By matching a fraction of a chip, a receiver can obtain meter-scale range measurements.
-
-```{figure} ../figures/02_ca_code_correlation.png
----
-width: 800px
----
-The receiver shifts a locally generated copy of the satellite's C/A code until it aligns with the received code. The required time shift provides an estimate of signal travel time.
-```
-
-> **Source:** [GNSS Decoded: GPS Signal Structure](https://gnssdecoded.com/gps-signal-structure/)
 
 ---
 
@@ -255,7 +246,7 @@ Modern civilian GPS also includes newer ranging codes, such as L2C and signals o
 
 ## The Navigation Message Describes the Satellite
 
-The satellite also transmits a **navigation message** at only 50 bits per second.
+The satellite also transmits a **navigation message** at only **50 bits per second**.
 
 It contains:
 
@@ -272,14 +263,14 @@ The receiver needs both:
 
 > Measuring the travel time is useful only if the receiver also knows the satellite's position and clock behavior.
 
-```{figure} ../figures/02_nm_frame.jpeg
+```{figure} ../figures/01_nm_frame.jpeg
 ---
 width: 700px
 ---
 The navigation message contains subframes that hold different types of information. Subframe 1 (Clock Correction & Satellite Health): Contains the GPS week number, satellite clock corrections, and satellite health status. This information is updated frequently and is critical for computing accurate pseudoranges. Subframes 2 & 3 (Ephemeris Data): Provide the precise orbital parameters for the transmitting satellite. This ephemeris data is valid for 2-4 hours and allows the receiver to calculate the satellite’s position to within a few meters. Ephemeris data is essential for accurate positioning. Subframes 4 & 5 (Almanac, Ionospheric Model, & UTC Parameters): Contain coarse orbital information (almanac) for all GPS satellites, ionospheric correction model parameters, and UTC time correlation. The almanac allows the receiver to predict which satellites should be visible and aids in rapid satellite acquisition. Because subframes 4 and 5 contain data for all satellites, it takes 25 frames (12.5 minutes) to transmit the complete almanac. [GNSS Decoded: GPS Signal Structure](https://gnssdecoded.com/gps-signal-structure/)
 ```
 
-```{figure} ../figures/02_nm_structure.jpeg
+```{figure} ../figures/01_nm_structure.jpeg
 ---
 width: 700px
 ---
@@ -300,9 +291,9 @@ The receiver knows the PRN sequence and uses these phase reversals to find and i
 
 After acquisition, the receiver removes the known code and navigation-data modulation and tracks the underlying carrier phase.
 
-> The deliberately encoded phase reversals carry the code and data; the remaining carrier-phase evolution provides the precise range-change measurement.
+> Note that a navigation bit remains constant over many complete transmissions of the C/A-code sequence.
 
-```{figure} ../figures/02_modulation.png
+```{figure} ../figures/01_modulation.png
 ---
 width: 800px
 ---
@@ -313,7 +304,7 @@ The combined PRN code and navigation data modulate the carrier by reversing its 
 
 # Basic Positioning
 
-```{figure} ../figures/02_signal_reception.jpeg
+```{figure} ../figures/01_signal_reception.jpeg
 ---
 width: 800px
 ---
@@ -414,7 +405,7 @@ Geodetic GNSS uses the same satellite signals with different observations, longe
 
 > How do we transform a navigation measurement into a geodetic measurement?
 
-```{figure} ../figures/02_bml_gps.jpg
+```{figure} ../figures/01_bml_gps.jpg
 ---
 width: 500px
 ---
@@ -457,7 +448,7 @@ where:
 
 > Carrier phase is an extremely precise ruler, but the receiver must determine which cycle it is measuring before it can obtain a precise range.
 
-```{figure} ../figures/02_carrier_phase_tracking.webp
+```{figure} ../figures/01_carrier_phase_tracking.webp
 ---
 width: 600px
 ---
@@ -599,3 +590,15 @@ Students will use the **Simple Point Positioning** section of the CRESCENT GNSS 
 The laboratory focuses on code-based positioning. It establishes the positioning problem that geodetic carrier-phase processing solves with much greater precision.
 
 Sections 2–4 can be demonstrated briefly. Sections 6–8 are optional extensions and need not be assigned as part of the core laboratory.
+
+---
+
+# Additional Resources
+
+> **Reading:** [GNSS Decoded: GPS Signal Structure](https://gnssdecoded.com/gps-signal-structure/)  
+> An accessible explanation of the carrier wave, PRN code, navigation message, and signal modulation.
+
+> **Videos:** [Supplementary GNSS video playlist](https://www.youtube.com/playlist?list=PLiQBCOW0daZIruZeL2ZTAmoRvIO_iflZp)
+
+> **Short Course:** [CRESCENT: Strain Accumulation and Release from GNSS](https://cascadiaquakes.org/geoscience-education-and-inclusion/technical-short-courses/geodesy/)  
+> Lectures and Jupyter notebooks covering GNSS time series, earthquake-cycle deformation, and fault modeling.

@@ -14,23 +14,26 @@ project:
     - file: intro.md
 
     # --- Modules ---
-    - title: Week 1 — A Deforming Earth
+    - title: Week 0 — A Deforming Earth
       children:
         - file: lectures/01_seismic_instrumentation
 		
-    - title: Week 2 — GNSS
+    - title: Week 1 — GNSS Positioning and Timeseries
       children:
         - file: lectures/01_GNSS1
         - file: notebooks/01_gnss_positioning
         - file: lectures/02_GNSS2
         - file: notebooks/02_gnss_timeseries
 		
-    - title: Week 3 — GNSS
-      children:
+    - title: Week 2 — Strain and the Seismic Cycle
+      children:		
         - file: lectures/03_GNSS3
         - file: notebooks/03_gnss_strain	
         - file: lectures/04_seismic_cycle
         - file: notebooks/04_seismic_cycle	
+
+    - title: Week 3 — Forward and Inverse Modeling
+      children:	
 			
 #
 #    # --- Optional ---

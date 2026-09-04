@@ -1,40 +1,5 @@
 # GNSS II: From Daily Positions to Deformation Time Series
 
-<!--
-LECTURE COMPLETION NOTES (not rendered as slides)
-
-Added from Intro to GNSS, slides 69-91:
-- a distinction between coordinate representations, datums, and kinematic reference frames
-- time-series providers and the importance of processing choices
-- raw/minimally corrected versus modeled products
-- explicit superposition and model-fitting concepts
-- Euler-pole removal for plate-fixed velocities
-- a dedicated slow-slip/ALBH sequence
-
-Content that was missing from both the draft and the source PDF, but is needed to
-fully support the stated learning objectives:
-- why omitted seasonal terms and offsets bias an estimated velocity
-- the distinction between formal daily-position uncertainties and realistic
-  velocity uncertainties when residuals are temporally correlated
-- a concrete workflow for reading and evaluating a three-component time series
-- the distinction between changing coordinate representation and changing frame
-- the role of network-common signals in time-series interpretation
-
-Intentionally omitted from the source PDF:
-- detailed geoid and WGS84 dimensions, which fit better in GNSS I or a coordinate
-  systems lecture than in a lecture on deformation time series
-- pole-tide equations and the detailed seasonal-error table, because standard
-  products already apply these geophysical corrections and the equations do not
-  advance this lecture's learning objectives
-- PCA-based postseismic estimation, which is too specialized for this lecture
-- slides 92-99 on the second notebook and CRESCENT transient-catalog workshop,
-  which are workshop logistics rather than lecture content
-
-Figure blocks now identify recommended visuals and source considerations. The
-referenced files are placeholders until the figures are created or added to the
-course figures directory.
--->
-
 ## Purpose
 
 GNSS processing produces estimates of station position through time. These time series contain tectonic motion together with seasonal variations, abrupt offsets, transient deformation, outliers, and noise.
@@ -62,54 +27,40 @@ Positions are usually plotted as changes relative to a reference position in thr
 
 Each point is commonly a daily position estimate with a formal uncertainty.
 
-> **Ask:** What features can you identify before fitting a model?
+> What features can you identify?
 
+```{figure} ../figures/02_CCCC_timeseries.png
 ---
-
-# Coordinates Describe Position; Frames Define Motion
-
-GNSS solutions are commonly produced in an Earth-centered global frame such as ITRF and then rotated from Cartesian $X,Y,Z$ into local east, north, and up components.
-
-- **Coordinate system:** how a position is expressed
-- **Reference frame:** the origin, orientation, scale, and their evolution through time
-
-Changing from $X,Y,Z$ to east–north–up changes the coordinate representation, not the underlying reference frame.
-
-For deformation, the essential question is: **relative to what frame is the station moving?**
-
-```{figure} ../figures/03_ecef_to_enu.png
+width: 600px
+alt: Three panel figure with timeseries of the east, north, and vertical positions of GPS station CCCC.
 ---
-width: 740px
-alt: Earth-centered X Y Z axes and local east north up axes at a GNSS station.
----
-Recommended visual: ECEF axes and the local east–north–up triad at one station. Keep ellipsoid and datum terminology to a brief verbal reminder rather than expanding it into additional slides.
+East, North, and Vertical position of station CCCC.  Time series plots are provided for 24 hour and 5 minute sample rate solutions. Each blue dot is an individual estimate of site position, the plot axes are scaled automatically to accommodate the data time span and range of positions (which have been demeaned). Times of nearby earthquakes and known equipment change events are marked with gray and cyan vertical dashed lines, respectively. Information about the earthquake and equipment events are provided in a table below the time series on the station page, with links to the USGS earthquake pages for that event. A “nearby” earthquake is one that is within 10^(M/2 - 0.79) km of the station, where M is the magnitude of the event. This is an approximation of the radius of maximum influence of the event and does not guarantee that a significant offset will appear in the time series at that time, or will not appear for stations at greater distance. 
 ```
 
 ---
 
-# A Plate-Fixed Frame Reveals Internal Deformation
+## Reference Frames: What Is Held Fixed?
 
-In ITRF, station velocities include rigid plate motion. To emphasize deformation within North America, subtract the velocity predicted by the plate's Euler pole:
+A GNSS velocity describes motion **relative to a chosen reference frame**.
 
-$$
-\mathbf{v}_{relative}=\mathbf{v}_{ITRF}-\boldsymbol{\omega}\times\mathbf{r}
-$$
+- In a global Earth-centered frame, an entire tectonic plate may appear to move.
+- In a plate-fixed frame, the average motion of that plate is removed.
+- The remaining velocities make deformation near plate boundaries easier to see.
 
-The observations have not changed—only the frame used to describe them has.
+The station has not physically changed its motion—we have changed what we treat as stationary.
 
-Neighboring stations moving together may be translating rigidly; spatial differences among their velocities reveal internal deformation.
+**When interpreting a GNSS velocity map, always check the reference frame.**
 
-```{figure} ../figures/03_itrf_vs_plate_fixed_velocities.png
+```{figure} ../figures/02_rf_comparison.png
 ---
-width: 800px
-alt: The same western North America GNSS velocity field in ITRF and relative to stable North America.
+width: 760px
+alt: Comparison of the same GNSS velocity field in a global IGS20 reference frame and a North America-fixed reference frame.
 ---
-Recommended visual: side-by-side maps using identical stations and vector scales. Ask which version makes Cascadia deformation easier to see.
+The same GNSS velocities shown in two reference frames. Removing the overall motion of the North American plate emphasizes deformation near its boundaries.
 ```
-
 ---
 
-# Know the Source and Product
+## Know the Source and Product
 
 Groups including NGL/UNR, EarthScope, JPL, PANGA, and SOPAC distribute GNSS time series. The same observations can yield slightly different positions because providers make different processing, frame, and filtering choices.
 
@@ -121,12 +72,12 @@ Groups including NGL/UNR, EarthScope, JPL, PANGA, and SOPAC distribute GNSS time
 
 Do not remove a signal twice. Record the **provider, product, frame, processing version, and access date**.
 
-```{figure} ../figures/03_product_levels.png
+```{figure} ../figures/02_product_levels.png
 ---
 width: 800px
-alt: One GNSS station shown as a position solution, fitted model, and residual time series.
+alt: GNSS station CCCC shown as a position solution and "cleaned and detrended".
 ---
-Recommended visual: show one station at three processing levels and label exactly which terms were removed. If space permits, add a small inset comparing the same station from two providers.
+Comparison of two different CCCC solutions: raw and "cleaned and detrended".
 ```
 
 ---
@@ -159,7 +110,7 @@ Recommended visual: an annotated synthetic time series that introduces every com
 
 ---
 
-# Superposition
+## Superposition
 
 The observed position is the sum of signals occurring at the same time:
 
@@ -171,17 +122,9 @@ Decomposition does not mean that the processes occurred separately. It means tha
 
 This is powerful—but the fitted terms are only physically meaningful if the model is appropriate and the terms can be distinguished by the data.
 
-```{figure} ../figures/03_superposition_components.png
----
-width: 800px
-alt: Separate trend, seasonal, offset, and transient signals summing to an observed GNSS time series.
----
-Recommended visual: vertically aligned component curves and their sum. This should be a scientific schematic generated from known functions, not a stock image.
-```
-
 ---
 
-# Interseismic Velocity
+## Interseismic Velocity
 
 A constant station velocity produces a linear trend:
 
@@ -205,7 +148,7 @@ Recommended visual: a single component with observations, fitted line, and a slo
 
 ---
 
-# Why Omitted Signals Bias Velocity
+## Why Omitted Signals Bias Velocity
 
 Suppose the true time series contains a trend and an offset:
 
@@ -229,7 +172,7 @@ Recommended visual: side-by-side fits to the same synthetic data—line only ver
 
 ---
 
-# Seasonal Deformation
+## Seasonal Deformation
 
 GNSS stations commonly exhibit annual and semiannual motion caused by:
 
@@ -257,7 +200,7 @@ Recommended visual: three aligned components from a station with a clear seasona
 
 ---
 
-# Abrupt Offsets
+## Abrupt Offsets
 
 An abrupt position change can be represented using a Heaviside step function:
 
@@ -300,17 +243,17 @@ $$
 
 The direction and magnitude of displacement vary across the network and constrain the earthquake slip distribution.
 
-```{figure} ../figures/03_coseismic_displacement_field.png
+```{figure} ../figures/02_coseismic.png
 ---
 width: 780px
-alt: Map of horizontal GNSS coseismic displacement vectors surrounding an earthquake rupture.
+alt: Map of horizontal GNSS coseismic displacement vectors surrounding an earthquake in Japan.
 ---
-Recommended visual: a published coseismic displacement field with the rupture or fault trace. A local example such as the 2010 El Mayor–Cucapah earthquake would connect directly to the laboratory.
+On January 13, 2025 an M6.8 earthquake struck off the southeast shore of Japan. The epicenter was very near another large earthquake (M 7.1) that occurred in April 2024. The January event could be seen as an aftershock since it occurred after, and was substantially smaller than, the April event. However, since it was not much smaller in magnitude than the April event, it could be seen as the second of a doublet, which ruptured the same segment of the plate boundary between the Philippine Sea and Eurasian tectonic plates. The largest displacement was a little over 5 cm at continuously recording station J095.
 ```
 
 ---
 
-# Transient Deformation
+## Transient Deformation
 
 Not all deformation is linear or instantaneous.
 
@@ -333,7 +276,7 @@ Recommended visual: idealized transient shapes on a shared time axis. Label the 
 
 ---
 
-# Postseismic Deformation
+## Postseismic Deformation
 
 Common empirical representations include logarithmic and exponential decay:
 
@@ -382,7 +325,7 @@ Recommended visual: one complete fit above and the estimated contribution of eac
 
 ---
 
-# Build the Model Incrementally
+## Build the Model Incrementally
 
 1. Plot all three components and inspect metadata.
 2. Fit a trend and examine residuals.
@@ -403,7 +346,7 @@ Recommended visual: three successive fits with their residuals. Use this to ask 
 
 ---
 
-# Residuals and Model Evaluation
+## Residuals and Model Evaluation
 
 Residuals are the differences between observations and predictions:
 
@@ -430,7 +373,7 @@ Recommended visual: four compact residual examples, each with one diagnostic fea
 
 ---
 
-# Network-Common Signals
+## Network-Common Signals
 
 Not every coherent signal is tectonic. Reference-frame errors, orbit or clock errors, and broad environmental loading can appear at many stations simultaneously.
 
@@ -552,7 +495,7 @@ Recommended visual: close the lecture with the analysis chain—positions, model
 
 ---
 
-## Laboratory
+# Laboratory
 
 Students will analyze ALBH using the CRESCENT GNSS time-series dataset:
 
@@ -572,3 +515,13 @@ alt: Example laboratory output with three GNSS components, nested models, slow-s
 ---
 Recommended visual: show students the expected final product without supplying the numerical answer—three components, nested model comparison, shaded slow-slip interval, and nearby-station residuals.
 ```
+
+---
+
+# Additional Resources
+
+> **GNSS Data:** [Nevada Geodetic Laboratory GPS Network Map](https://geodesy.unr.edu/NGLStationPages/gpsnetmap/GPSNetMap.html)  
+> Explore GNSS station locations, position time series, and velocities from the Nevada Geodetic Laboratory.
+
+> **Regional GNSS Data:** [Pacific Northwest Geodetic Array (PANGA)](https://www.panga.org/)  
+> Access GNSS station information, position time series, velocity fields, and other geodetic products for Cascadia and the Pacific Northwest.
