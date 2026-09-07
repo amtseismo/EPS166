@@ -1,6 +1,6 @@
 # EPS 166: Crustal Deformation
 
-![Venezuela Earthquake Interferogram](./figures/0_venezuela.jpg)
+![Venezuela Earthquake Interferogram](0_venezuela.jpg)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Deploy Book](https://github.com/amtseismo/EPS166/actions/workflows/deploy.yml/badge.svg)](https://github.com/amtseismo/EPS166/actions/workflows/deploy.yml)
