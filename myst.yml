@@ -27,13 +27,15 @@ project:
 		
     - title: Week 2 — Strain and the Seismic Cycle
       children:		
-        - file: lectures/03_GNSS3
+        - file: lectures/03_gnss_strain
         - file: notebooks/03_gnss_strain	
         - file: lectures/04_seismic_cycle
         - file: notebooks/04_seismic_cycle	
 
-    - title: Week 3 — Forward and Inverse Modeling
+    - title: Week 3 — Short and long timescale Seismology
       children:	
+        - file: lectures/05_seismology
+        - file: notebooks/05_seismology
 			
 #
 #    # --- Optional ---
