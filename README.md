@@ -1,13 +1,7 @@
 # EPS 166: Crustal Deformation
 
-```{figure} 0_venezuela.jpg
-:scale: 100 %
-:alt: Ground displacement was especially intense near Caracas and La Guaira, Venezuela, after earthquakes struck the region on June 24, 2026. The map was derived from NISAR (NASA-ISRO Synthetic Aperture Radar) data acquired on June 25 and June 30 (after the earthquakes) and June 13 and June 18 (before the earthquakes).
-NASA Earth Observatory/Lauren Dauphin
-
-Ground displacement was especially intense near Caracas and La Guaira, Venezuela, after earthquakes struck the region on June 24, 2026. The map was derived from NISAR (NASA-ISRO Synthetic Aperture Radar) data acquired on June 25 and June 30 (after the earthquakes) and June 13 and June 18 (before the earthquakes).
-NASA Earth Observatory/Lauren Dauphin
-```
+![Venezuela Earthquake Interferogram](0_venezuela.jpg)
+*Ground displacement near Caracas and La Guaira after the June 24, 2026 earthquakes, derived from NISAR data. NASA Earth Observatory/Lauren Dauphin*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Deploy Book](https://github.com/amtseismo/EPS166/actions/workflows/deploy.yml/badge.svg)](https://github.com/amtseismo/EPS166/actions/workflows/deploy.yml)
