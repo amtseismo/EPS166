@@ -1,4 +1,4 @@
-# GNSS IV: Deformation Through the Seismic Cycle
+# Deformation Through the Seismic Cycle
 
 ## Purpose
 
@@ -16,16 +16,14 @@ In this lecture, we will:
 
 # An Earthquake Is One Brief Part of a Longer Cycle
 
-```{figure} figures/05_seismic_cycle_timeseries.png
+```{figure} ../figures/04_seismic_cycle_timeseries.png
 ---
-width: 850px
+name: GNSS Earthquake Cycle
+width: 600px
 alt: Synthetic GNSS position time series showing interseismic loading, a coseismic offset, and postseismic deformation.
 ---
 A station may record steady interseismic motion, a nearly instantaneous coseismic offset, and a decaying postseismic transient. The next loading interval begins before postseismic deformation has necessarily ended.
 ```
-
-> **Ask:** Which part of this record would contribute to a velocity estimated from the entire time series?
-
 ---
 
 # Reid Connected the 1906 Offsets to Elastic Rebound
@@ -37,7 +35,7 @@ Reid's interpretation of the 1906 San Francisco earthquake was that:
 - the fault eventually slips
 - the surrounding crust rebounds toward a less strained configuration
 
-```{figure} figures/05_reid_elastic_rebound.png
+```{figure} ../figures/04_reid_elastic_rebound.png
 ---
 width: 650px
 alt: Historical diagram illustrating elastic rebound across a strike-slip fault.
