@@ -36,16 +36,25 @@ project:
       children:	
         - file: lectures/05_seismology
         - file: notebooks/05_seismology
-			
-#
-#    # --- Optional ---
-#    - title: Optional — Advanced Topics
-#      children:
-#        - file: lectures/tomography-lecture-whiteboard
-#        - file: notebooks/travel_time_tomography_iterative_pykonal
-#        - file: notebooks/toy_surface_wave_inversion
-#
+        - file: lectures/06_dems_lidar
+		
+    - title: Week 4 — InSAR
+      children:	
+        - file: lectures/07_insar
+        - file: notebooks/07_insar
 
+    - title: Week 5 — Forward and Inverse Modeling
+      children:	
+        - file: lectures/09_forward_modeling
+        - file: notebooks/09_forward_modeling_lab
+        - file: lectures/10_inverse_problem
+        - file: notebooks/10_inverse_problem_lab
+		
+    - title: Week 6 — Slip Inversion
+      children:	
+        - file: lectures/11_slow_slip		
+        - file: notebooks/11_sse_inversion  
+	  
     # --- References ---
 #    - title: References
 #      children:
