@@ -16,7 +16,7 @@ project:
     # --- Modules ---
     - title: Week 0 — A Deforming Earth
       children:
-        - file: lectures/01_seismic_instrumentation
+        - file: lectures/00_intro
 		
     - title: Week 1 — GNSS Positioning and Timeseries
       children:
