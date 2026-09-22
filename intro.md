@@ -18,19 +18,19 @@ NASA Earth Observatory/Lauren Dauphin
 
 ## Course Schedule
 
-| Week | Topic | Reading | Dates |
-| --- | --- | --- | --- |
-| Week 0 | A Deforming Earth | TBD | 9/23 |
-| Week 1 | Measuring Earth Motion with GNSS | TBD | 9/28 and 9/30 |
-| Week 2 | Faults, Earthquakes, and Seismic Observations | TBD | 10/5 and 10/7 |
-| Week 3 | Measuring Deformation with InSAR | TBD | 10/12 and 10/14 |
-| Week 4 | From Fault Slip to Surface Deformation | TBD | 10/19 and 10/21 |
-| Week 5 | From Surface Deformation to Fault Slip | TBD | 10/26 and 10/28 |
-| Week 6 | The Earthquake Cycle | TBD | 11/2 and 11/4 |
-| Week 7 | Slow Slip, Tremor, and Fault Creep | TBD | 11/9 |
-| Week 8 | Volcano Deformation and Magma Migration | TBD | 11/16 and 11/18 |
-| Week 9 | Groundwater, Fluids, and Subsidence | TBD | 11/23 |
-| Week 10 | Vertical Land Motion and Synthesis | TBD | 11/30 and 12/2 |
+| Week | Topic | Dates |
+| --- | --- | --- |
+| Week 0 | A Deforming Earth | 9/23 |
+| Week 1 | GNSS Positioning and Timeseries | 9/28 and 9/30 |
+| Week 2 | Strain and the Seismic Cycle | 10/5 and 10/7 |
+| Week 3 | Short and Long Timescale Seismology | 10/12 and 10/14 |
+| Week 4 | InSAR | 10/19 and 10/21 |
+| Week 5 | Forward and Inverse Modeling | 10/26 and 10/28 |
+| Week 6 | Midterm and Slip Inversion | 11/2 and 11/4 |
+| Week 7 | Mass Movements | 11/9 |
+| Week 8 | Volcano Deformation and Magma Migration | 11/16 and 11/18 |
+| Week 9 | Groundwater, Fluids, and Subsidence | 11/23 |
+| Week 10 | Vertical Land Motion and Synthesis | 11/30 and 12/2 |
 
 Each notebook includes a Colab badge — click it to run in Google Colab with no local setup.
 

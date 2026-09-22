@@ -54,6 +54,18 @@ project:
       children:	
         - file: lectures/11_slow_slip		
         - file: notebooks/11_sse_inversion  
+
+    - title: Week 7 — Mass Movements
+      children:	
+
+    - title: Week 8 — Volcano Deformation and Magma Migration
+      children:	
+	  
+    - title: Week 9 — Groundwater and Subsidence
+      children:	 
+	  
+    - title: Week 10 — Vertical Land Motion and Synthesis
+      children:	 
 	  
     # --- References ---
 #    - title: References
