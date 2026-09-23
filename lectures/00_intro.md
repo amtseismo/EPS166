@@ -74,7 +74,7 @@ name: Cascadia tsunami animation
 width: 800px
 alt: Animation of a Cascadia Subduction Zone tsunami.
 ---
-Vertical seafloor uplift and seafloor normal velocity from a physics-based 3D dynamic rupture and seismic wave propagation computation (Glehman et al., 2025) of a magnitude 8.7 earthquake scenario spanning the full margin of the Cascadia subduction zone from [Henneking et al. (2026)](https://doi.org/10.1145/3712285.37717).
+Vertical seafloor uplift and seafloor normal velocity from a physics-based 3D dynamic rupture and seismic wave propagation computation (Glehman et al., 2025) of a magnitude 8.7 earthquake scenario spanning the full margin of the Cascadia subduction zone from [Henneking et al. (2026)](https://doi.org/10.1145/3712285.3771787).
 ```
 
 ---
