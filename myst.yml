@@ -38,10 +38,12 @@ project:
         - file: notebooks/05_seismology
         - file: lectures/06_dems_lidar
 		
-    - title: Week 4 — InSAR
-      children:	
-        - file: lectures/07_insar
-        - file: notebooks/07_insar
+    - title: Week 4 — Satellite Remote Sensing
+      children:
+        - file: lectures/07_optical
+        - file: notebooks/07_optical_pixel_tracking	
+        - file: lectures/08_insar
+        - file: notebooks/08_insar
 
     - title: Week 5 — Forward and Inverse Modeling
       children:	
