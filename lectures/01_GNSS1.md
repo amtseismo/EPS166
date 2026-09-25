@@ -380,7 +380,7 @@ With four or more satellites, the overdetermined system can be solved using leas
 
 ---
 
-## Satellite Geometry and Dilution of Precision
+## Satellite Geometry and Position Dilution of Precision (PDOP)
 
 Position accuracy depends on both:
 
