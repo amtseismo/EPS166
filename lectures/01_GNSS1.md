@@ -532,6 +532,18 @@ T_i
 \epsilon_i
 $$
 
+where:
+
+- $\Phi_i$ is the carrier-phase observation for satellite $i$, expressed as a distance
+- $\rho_i$ is the geometric satellite–receiver distance
+- $\delta t_r$ and $\delta t_i$ are receiver- and satellite-clock errors
+- $I_i$ and $T_i$ are ionospheric and tropospheric delays
+- $\lambda$ is the carrier wavelength
+- $N_i$ is the integer ambiguity for satellite $i$
+- $\epsilon_i$ includes multipath, hardware biases, and measurement noise
+
+The ionospheric term has the opposite sign from the pseudorange equation because the ionosphere delays the code but advances the carrier phase.
+
 Precise processing combines observations from many satellites and times with:
 
 - precise satellite orbits and clock corrections
