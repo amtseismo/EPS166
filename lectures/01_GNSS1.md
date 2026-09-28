@@ -417,17 +417,22 @@ Earthscope GPS site at the UC Davis Bodega Marine Laboratory.
 
 ## Carrier Phase Provides Precision—but Not a Unique Range
 
-Code measurements provide an approximate range, but they are not precise enough to measure small tectonic motions.
+The C/A code contains 1.023 million chips per second, so each chip corresponds to approximately 293 m of signal travel. Code correlation can locate the signal to roughly \(1\%\) of a chip:
+
+$$
+0.01 \times 293\ \mathrm{m}
+\approx 3\ \mathrm{m}
+$$
+
+This explains the few-meter precision of C/A-code ranging under good conditions. Actual position accuracy also depends on atmospheric delays, orbit and clock errors, multipath, and satellite geometry.
 
 | Observation | Typical measurement precision | Primary role |
-| --- | ---: | --- |
-| **C/A code** | meters | satellite identification and coarse ranging |
+|---|---:|---|
+| **C/A code** | approximately 3 m | satellite identification and coarse ranging |
 | **P(Y) code** | decimeters | finer code ranging for authorized users |
 | **Carrier phase** | millimeter-scale sensitivity | precise changes in satellite–receiver distance |
 
-After acquiring a satellite, the receiver removes the known code and navigation-data modulation and tracks the phase of the carrier relative to a locally generated signal.
-
-For the L1 carrier, the wavelength is approximately 19 cm. Measuring the phase to \(1\%\) of a cycle corresponds to:
+For the L1 carrier, the wavelength is approximately 19 cm. Measuring its phase to \(1\%\) of a cycle corresponds to:
 
 $$
 0.01 \times 19\ \mathrm{cm}
