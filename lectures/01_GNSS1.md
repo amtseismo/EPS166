@@ -606,8 +606,6 @@ Students will use the **Simple Point Positioning** section of the CRESCENT GNSS 
 
 The laboratory focuses on code-based positioning. It establishes the positioning problem that geodetic carrier-phase processing solves with much greater precision.
 
-Sections 2–4 can be demonstrated briefly. Sections 6–8 are optional extensions and need not be assigned as part of the core laboratory.
-
 ---
 
 # Additional Resources

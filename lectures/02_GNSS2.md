@@ -428,10 +428,6 @@ Students will analyze ALBH using the CRESCENT GNSS time-series dataset:
 - estimate its three-component displacement
 - test whether the transient is coherent at nearby stations
 
-For a 50-minute lab, automated transient detection, postseismic grid searches, Euler-pole estimation, block rotations, and spectral-noise analysis are intentionally omitted. They can become later or optional exercises.
-
-```
-
 ---
 
 # Additional Resources
