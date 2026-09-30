@@ -305,6 +305,16 @@ The model contains a reference position, velocity, seasonal variations, specifie
 
 For fixed event times and fixed decay times, coefficients are estimated by weighted least squares, with each observation weighted by $1/\sigma_i$, so that noisier epochs contribute less to the fit.
 
+This can be written compactly in matrix form as:
+
+$$\mathbf{d} = \mathbf{G}\mathbf{m} + \boldsymbol{\epsilon}$$
+
+where $\mathbf{d}$ is the vector of observed displacements, $\mathbf{m}$ is the vector of model parameters, and each row of the design matrix $\mathbf{G}$ corresponds to one observation epoch and each column to one model term. The weighted least squares solution is:
+
+$$\mathbf{m} = \left(\mathbf{G}^T \mathbf{W} \mathbf{G}\right)^{-1} \mathbf{G}^T \mathbf{W} \mathbf{d}$$
+
+where $\mathbf{W}$ is diagonal with $1/\sigma_i$ on the diagonal. In the lab you will build $\mathbf{G}$ explicitly for the trend and seasonal terms and see how the solution changes as columns are added.
+
 ---
 
 ## Build the Model Incrementally
@@ -359,18 +369,6 @@ alt: Several nearby GNSS time series sharing one coherent fluctuation while one 
 ---
 Example of common mode noise shared across the network and the application of stack filtering to remove it.
 ```
-
----
-
-# Uncertainty Is More Than Error Bars
-
-Daily formal uncertainties describe precision under the assumptions of the position solution.
-
-GNSS residuals are commonly correlated through time because of monument motion, environmental effects, reference-frame errors, and processing artifacts.
-
-If a velocity fit assumes independent residuals when the noise is correlated, its uncertainty is usually too small.
-
-> **Key distinction:** A good fit describes the observations; a realistic uncertainty describes how confidently we know the parameters.
 
 ---
 
