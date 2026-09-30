@@ -31,10 +31,11 @@ Each point is commonly a daily position estimate with a formal uncertainty.
 
 ```{figure} ../figures/02_CCCC_timeseries.png
 ---
+name: CCCC Timeseries
 width: 600px
 alt: Three panel figure with timeseries of the east, north, and vertical positions of GPS station CCCC.
 ---
-East, North, and Vertical position of station CCCC.  Time series plots are provided for 24 hour and 5 minute sample rate solutions. Each blue dot is an individual estimate of site position, the plot axes are scaled automatically to accommodate the data time span and range of positions (which have been demeaned). Times of nearby earthquakes and known equipment change events are marked with gray and cyan vertical dashed lines, respectively. Information about the earthquake and equipment events are provided in a table below the time series on the station page, with links to the USGS earthquake pages for that event. A “nearby” earthquake is one that is within 10^(M/2 - 0.79) km of the station, where M is the magnitude of the event. This is an approximation of the radius of maximum influence of the event and does not guarantee that a significant offset will appear in the time series at that time, or will not appear for stations at greater distance. 
+East, North, and Vertical position of station CCCC. Each blue dot is an individual estimate of site position, the plot axes are scaled automatically to accommodate the data time span and range of positions (which have been demeaned). Times of nearby earthquakes and known equipment change events are marked with gray and cyan vertical dashed lines, respectively. Information about the earthquake and equipment events are provided in a table below the time series on the station page, with links to the USGS earthquake pages for that event. A “nearby” earthquake is one that is within 10^(M/2 - 0.79) km of the station, where M is the magnitude of the event. This is an approximation of the radius of maximum influence of the event and does not guarantee that a significant offset will appear in the time series at that time, or will not appear for stations at greater distance. 
 ```
 
 ---
@@ -53,6 +54,7 @@ The station has not physically changed its motion—we have changed what we trea
 
 ```{figure} ../figures/02_rf_comparison.png
 ---
+name: Reference Frame Comparison
 width: 760px
 alt: Comparison of the same GNSS velocity field in a global IGS20 reference frame and a North America-fixed reference frame.
 ---
@@ -74,6 +76,7 @@ Do not remove a signal twice. Record the **provider, product, frame, processing 
 
 ```{figure} ../figures/02_product_levels.png
 ---
+name: CCCC Comparison
 width: 800px
 alt: GNSS station CCCC shown as a position solution and "cleaned and detrended".
 ---
@@ -100,14 +103,6 @@ $$
 y(t)=\text{trend}+\text{seasonal}+\text{offsets}+\text{transients}+\text{noise}
 $$
 
-```{figure} ../figures/03_time_series_anatomy.png
----
-width: 820px
-alt: Synthetic GNSS position time series with trend, seasonal oscillation, coseismic step, postseismic decay, outlier, and data gap labeled.
----
-Recommended visual: an annotated synthetic time series that introduces every component used later in the lecture. Keep the same colors for these components on subsequent slides.
-```
-
 ---
 
 ## Superposition
@@ -118,7 +113,7 @@ $$
 y(t)=\sum_{k=1}^{n}x_k(t)+\epsilon(t)
 $$
 
-Decomposition does not mean that the processes occurred separately. It means that we represent their combined effect with simpler model terms.
+We represent the combined effect of different processes with simple model terms.
 
 This is powerful—but the fitted terms are only physically meaningful if the model is appropriate and the terms can be distinguished by the data.
 
@@ -132,19 +127,13 @@ $$
 y(t)=a+vt
 $$
 
-where $a$ is position at the reference epoch and $v$ is station velocity.
+where $a$ is position at the reference epoch and $v$ is station velocity. In practice, time is centered on the mean epoch so that the estimated offset $a$ refers to the midpoint of the record rather than year zero, which reduces numerical covariance between $a$ and $v$.
 
 Velocity is the slope of all relevant observations, not simply the difference between the first and last positions.
 
-Short records can be biased by partial seasonal cycles, offsets, transients, or influential outliers.
+Velocities are typically reported in mm/yr; tectonic rates range from a few mm/yr in stable interiors to tens of mm/yr near active plate boundaries. 
 
-```{figure} ../figures/03_velocity_slope.png
----
-width: 760px
-alt: GNSS position observations with a fitted linear trend whose slope is the station velocity.
----
-Recommended visual: a single component with observations, fitted line, and a slope triangle labeled in mm/yr.
-```
+Short records can be biased by partial seasonal cycles, offsets, transients, or influential outliers.
 
 ---
 
@@ -162,13 +151,7 @@ Similarly, a record spanning a noninteger number of seasonal cycles can mistake 
 
 > **Prediction:** How would a positive offset near the middle of a record affect a line fit across the whole record?
 
-```{figure} ../figures/03_omitted_offset_bias.png
----
-width: 800px
-alt: A stepped time series fit once with a straight line and once with a trend plus offset, producing different velocity estimates.
----
-Recommended visual: side-by-side fits to the same synthetic data—line only versus line plus step—with the estimated velocities printed on the plots.
-```
+A positive offset near the middle inflates the slope before the step and deflates it after; fitting a single line across the full record biases the velocity upward.
 
 ---
 
@@ -190,12 +173,13 @@ $$
 
 The vertical component commonly has the largest seasonal amplitude.
 
-```{figure} ../figures/03_three_component_seasonality.png
+```{figure} ../figures/02_CCCC.png
 ---
-width: 800px
-alt: East north and up GNSS components showing annual and semiannual variations, with the larger vertical amplitude emphasized.
+name: CCCC
+width: 820px
+alt: GNSS position time series with trend, seasonal oscillation, coseismic step, postseismic decay, outliers, and data gaps.
 ---
-Recommended visual: three aligned components from a station with a clear seasonal signal. Plot at least two full years and use the same time axis.
+CCCC time series that shows clear seasonal deformation.
 ```
 
 ---
@@ -217,12 +201,13 @@ Possible causes include:
 
 An offset is not automatically tectonic. Compare its timing with earthquake catalogs and station-maintenance records.
 
-```{figure} ../figures/03_tectonic_vs_equipment_offsets.png
+```{figure} ../figures/02_abrupt_offsets.png
 ---
-width: 800px
-alt: GNSS time series offsets annotated with an earthquake time and an antenna replacement time.
+name: Abrupt offsets
+width: 820px
+alt: GNSS position time series with trend, seasonal oscillation, coseismic step, postseismic decay, outliers, and data gaps.
 ---
-Recommended visual: two real or idealized offsets with vertical event markers—one earthquake and one equipment change—to demonstrate that shape alone does not identify cause.
+GPS station coordinate time series of the station G016 for the east, north and up component. The vertical dashed lines mark potential earthquake discontinuities from the NGL discontinuity database. Light red lines mark discontinuities causing a station coordinate displacement smaller than ten millimeters in one of the components, while dark red lines mark discontinuities causing a station coordinate displacement equal to or larger than ten millimeters in one of the components. From [Crocetti et al. 2021](https://doi.org/10.3390/rs13193906).
 ```
 
 ---
@@ -241,10 +226,11 @@ $$
 D_H=\sqrt{D_E^2+D_N^2}
 $$
 
-The direction and magnitude of displacement vary across the network and constrain the earthquake slip distribution.
+The direction and magnitude of displacement vary across the network and constrain the earthquake slip distribution.  A simple practical estimate compares mean positions in short windows immediately before and after the event; the result depends on window length and on any remaining model misfit.
 
 ```{figure} ../figures/02_coseismic.png
 ---
+name: Coseismic displacements from Japanese earthquake
 width: 780px
 alt: Map of horizontal GNSS coseismic displacement vectors surrounding an earthquake in Japan.
 ---
@@ -266,36 +252,40 @@ Transient signals include:
 
 Different physical mechanisms can produce similar temporal behavior. A fitted functional form does not uniquely identify the mechanism.
 
-```{figure} ../figures/03_transient_timescales.png
+```{figure} ../figures/02_transient_deformation.jpg
 ---
+name: Volcano Deformation
 width: 800px
 alt: Idealized step, ramp, exponential recovery, and inflation-deflation signals arranged by characteristic duration.
 ---
-Recommended visual: idealized transient shapes on a shared time axis. Label the timescale and possible processes, while noting that the mapping is not unique.
+(a) Maps of Etna volcano with the Global Navigation Satellite System (GNSS) (red circles) and tilt (yellow squares) permanent networks; the blue triangle highlights the area whose variation is shown in Figure (c), while the black circle indicates the ECP tilt station. VdB indicates the Valle del Bove area. The inset at the left bottom shows the location of Mt. Etna in southern Italy; (b) Tilt recorded on the N14°E component of ECP station during the fountain sequence tilt series: F1-F15 shows changes associated with the first 15 fountains also characterized by a general lowering trend ending with the last two episodes (F16 and F17). The inset at the left bottom shows the summit crater of Mt. Etna (De Beni et al., 2015). SEC, South East Crater; NSEC, New SEC; (c) Daily variation of the area recorded at an intermediate altitude triangle (EDAM-EMEG-EINT) indicated by the blue triangle in Figure (a). Positive variations indicate inflations, while negative variations are measured during deflations of the volcanic edifice, due to volcanic activity; (d) N-S daily components of the EINT and EDAM GNSS stations (blue and gray circles, respectively), on the southern and northern flanks of Mt. Etna, respectively. E-W daily component of the EMEG station (red circles), located on the western flank. Red rectangles indicate short and episodic interruptions of the inflation due to summit eruptive activity. The orange rectangles highlight the deflation produced by the 17 lava fountains. The vertical black lines indicate the start of each phase characterized by a different ground deformation pattern, recognized on the basis of the changes in the slope of the time series. Black arrows indicate inflation, while the red arrow indicates the deflation of volcanic edifice. From [Bruno et al. 2022](https://doi.org/10.1029/2021GL095195)
 ```
 
 ---
 
 ## Postseismic Deformation
 
-Common empirical representations include logarithmic and exponential decay:
+Common empirical representations include logarithmic and exponential decay.  Velocity-strengthening afterslip follows a logarithmic decay
 
 $$
-y_{log}(t)=A\log\left(1+\frac{t-t_e}{\tau}\right)H(t-t_e)
+y_{log}(t)=c+a\ln\left(1+\frac{t}{\tau}\right).
 $$
 
+While postseismic relaxation follows an exponential decay
+
 $$
-y_{exp}(t)=A\left[1-\exp\left(-\frac{t-t_e}{\tau}\right)\right]H(t-t_e)
+y_{exp}(t)=c+a\left[1-\exp\left(-\frac{t}{\tau}\right)\right].
 $$
 
 The decay time $\tau$ is nonlinear. One approach is to test a range of $\tau$ values, solve for the remaining coefficients at each value, and select the model with the best justified fit.
 
-```{figure} ../figures/03_postseismic_decay_models.png
+```{figure} ../figures/02_postseismic.png
 ---
+name: Postseismic
 width: 780px
 alt: Logarithmic and exponential postseismic displacement curves for several decay times.
 ---
-Recommended visual: compare logarithmic and exponential functions, including how changing $\tau$ changes curvature. Avoid implying that curve shape alone identifies the underlying mechanism.
+Postseismic time-series for the 18 analyzed stations. Note that the time-series are vertically displaced (see Table 1 for coseismic offset values). Solid and dashed lines are best-fit logarithmic and exponential functions, respectively (The relaxation predictions are not shown for newly installed stations BSIM, LEWK, LHWA, and UMLH, because the additional constant velocity that is solved for those stations differs between the two models and changes the appearance of the time-series.): (a) east direction, (b) north direction, and (c) up direction. [Kreemer et al. 2006](https://doi.org/10.1029/2005GL025566)
 ```
 
 ---
@@ -313,15 +303,7 @@ $$
 
 The model contains a reference position, velocity, seasonal variations, specified steps, optional transient terms $T(t)$, and residuals.
 
-For fixed event times and fixed decay times, most coefficients can be estimated together by linear least squares.
-
-```{figure} ../figures/03_combined_model_fit.png
----
-width: 820px
-alt: GNSS time series with the combined model overlaid and individual trend seasonal offset and transient contributions shown below.
----
-Recommended visual: one complete fit above and the estimated contribution of each model term below. Use the same component colors introduced on the anatomy slide.
-```
+For fixed event times and fixed decay times, coefficients are estimated by weighted least squares, with each observation weighted by $1/\sigma_i$, so that noisier epochs contribute less to the fit.
 
 ---
 
@@ -335,14 +317,6 @@ Recommended visual: one complete fit above and the estimated contribution of eac
 6. Compare parameter estimates and residual structure between models.
 
 The goal is not the most complicated model. It is the simplest model that captures the signals relevant to the question.
-
-```{figure} ../figures/03_incremental_model_building.png
----
-width: 820px
-alt: Successive fits to a GNSS time series showing trend only, trend plus seasonal terms, and trend plus seasonal terms and offsets.
----
-Recommended visual: three successive fits with their residuals. Use this to ask which remaining structure justifies the next model term.
-```
 
 ---
 
@@ -363,14 +337,6 @@ Inspect residuals for:
 
 Small residuals do not guarantee that every fitted term has a physical interpretation.
 
-```{figure} ../figures/03_residual_diagnostics.png
----
-width: 820px
-alt: Residual time series illustrating remaining seasonality, an undocumented step, changing variance, and an isolated outlier.
----
-Recommended visual: four compact residual examples, each with one diagnostic feature labeled. Ask students what model or metadata check each pattern motivates.
-```
-
 ---
 
 ## Network-Common Signals
@@ -385,12 +351,13 @@ Comparing neighboring stations helps distinguish:
 
 Regional filtering can reduce common-mode noise, but it can also remove spatially broad deformation if applied without care.
 
-```{figure} ../figures/03_common_mode_network.png
+```{figure} ../figures/02_common_mode.png
 ---
+name: Common mode
 width: 820px
 alt: Several nearby GNSS time series sharing one coherent fluctuation while one station also contains a local offset.
 ---
-Recommended visual: aligned time series from several nearby stations with a shared signal shaded and one station-specific anomaly marked.
+Example of common mode noise shared across the network and the application of stack filtering to remove it.
 ```
 
 ---
@@ -405,14 +372,6 @@ If a velocity fit assumes independent residuals when the noise is correlated, it
 
 > **Key distinction:** A good fit describes the observations; a realistic uncertainty describes how confidently we know the parameters.
 
-```{figure} ../figures/03_white_vs_colored_noise.png
----
-width: 800px
-alt: Two residual series with similar scatter but different temporal correlation and different velocity uncertainty.
----
-Recommended visual: contrast white and temporally correlated residuals with similar RMS. Report the larger slope uncertainty for the correlated case.
-```
-
 ---
 
 # Slow-Slip Events
@@ -421,36 +380,15 @@ In Cascadia, slow-slip events were recognized when GNSS stations showed temporar
 
 In a detrended time series, a slow-slip event appears as displacement accumulated over days to weeks rather than an instantaneous step.
 
-Between events, stations resume their inter-ETS motion. The inter-ETS slope can differ from the long-term slope because repeated slow slip contributes to the full time series.
+Between events, stations resume their inter-ETS motion. The slope between slow slip events can differ from the long-term slope because repeated slow slip contributes to the full time series.
 
-```{figure} ../figures/03_slow_slip_cartoon.png
+```{figure} ../figures/02_ALBH.png
 ---
-width: 800px
-alt: Detrended GNSS time series showing repeated gradual reversals during slow-slip events and approximately linear inter-event segments.
----
-Recommended visual: an idealized Cascadia east-component time series with SSE intervals shaded and inter-ETS slopes labeled. Follow it immediately with the real ALBH example.
-```
-
----
-
-# Example: ALBH in Cascadia
-
-Use the raw and detrended east-component time series for station ALBH.
-
-Ask students to identify:
-
-1. the long-term interseismic trend in the raw series
-2. why the transients are difficult to see before detrending
-3. the direction and duration of individual reversals
-4. the approximately steady inter-ETS segments
-5. variation in displacement among slow-slip events
-
-```{figure} ../figures/03_albh_raw_detrended.png
----
+name: SSEs in ALBH
 width: 820px
 alt: Raw and detrended east-component GNSS position time series for station ALBH, with slow-slip events visible as temporary reversals.
 ---
-Raw and detrended east-component time series for ALBH. Recommended source: reproduce from the documented provider data used in the laboratory, then mark several slow-slip intervals and cite the data provider and processing version.
+Raw and detrended east-component GNSS position time series for station ALBH, with slow-slip events visible as temporary reversals.
 ```
 
 ---
@@ -466,14 +404,6 @@ Raw and detrended east-component time series for ALBH. Recommended source: repro
 
 Sampling gaps can make a gradual transient appear abrupt, so interpretation should use station metadata and the surrounding network.
 
-```{figure} ../figures/03_step_vs_transient_sampling.png
----
-width: 800px
-alt: An abrupt step and a gradual ramp sampled continuously and across a data gap.
----
-Recommended visual: show how a data gap makes a ramp indistinguishable from a step. This directly motivates checking nearby stations and metadata.
-```
-
 ---
 
 # GNSS II Summary
@@ -484,14 +414,6 @@ Recommended visual: show how a data gap makes a ramp indistinguishable from a st
 - Residuals test model adequacy; correlated noise affects parameter uncertainty.
 - Slow slip is most visible after long-term and seasonal signals are removed.
 - Velocities from many stations form the field used to estimate tectonic strain.
-
-```{figure} ../figures/03_positions_to_strain.png
----
-width: 800px
-alt: Workflow from three-component station positions through time-series models to a regional velocity field and crustal strain.
----
-Recommended visual: close the lecture with the analysis chain—positions, modeled time series, velocity vectors, and strain field—previewing the next use of GNSS observations.
-```
 
 ---
 
@@ -508,12 +430,6 @@ Students will analyze ALBH using the CRESCENT GNSS time-series dataset:
 
 For a 50-minute lab, automated transient detection, postseismic grid searches, Euler-pole estimation, block rotations, and spectral-noise analysis are intentionally omitted. They can become later or optional exercises.
 
-```{figure} ../figures/03_lab_target_output.png
----
-width: 820px
-alt: Example laboratory output with three GNSS components, nested models, slow-slip event window, and residuals.
----
-Recommended visual: show students the expected final product without supplying the numerical answer—three components, nested model comparison, shaded slow-slip interval, and nearby-station residuals.
 ```
 
 ---
