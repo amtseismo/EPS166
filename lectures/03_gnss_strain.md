@@ -293,6 +293,30 @@ Possible deformation patterns described by the signs of the maximum and minimum 
 
 ---
 
+## Principal Axes and Fault Geometry
+
+The orientation of the principal strain axes relative to a fault reveals the style of slip.
+
+**For a pure right-lateral (strike-slip) fault:**
+
+- Crust on either side slides horizontally past its neighbor.
+- This stretches the material diagonally and shortens it in the perpendicular diagonal direction.
+- The principal **extension** axis ($\dot\epsilon_1 > 0$) lies at approximately **45° to the fault trace**.
+- The principal **contraction** axis ($\dot\epsilon_2 < 0$) is perpendicular — also at 45° to the fault, on the other side.
+- Neither principal axis is parallel or perpendicular to the fault.
+
+**For fault-normal contraction** (e.g., above a locked subduction zone):
+
+- The maximum contraction axis is approximately fault-normal (margin-perpendicular).
+- Any along-strike extension or contraction appears in the other principal direction.
+
+> **Common confusion:** Students sometimes expect principal axes to align with fault traces. For strike-slip faulting they do not — the 45° offset arises because shear on the fault plane is equivalent to equal-and-opposite normal strains on axes rotated 45° from the fault.
+
+> **In the lab:** When you interpret the northern San Andreas triangle, ask whether the principal axes are oriented ~45° from the San Andreas trace. A predominantly strike-slip setting should show this pattern.
+
+
+---
+
 ## Other Useful Quantities Follow from the Principal Rates
 
 **Dilatation (areal strain rate)**
@@ -653,6 +677,9 @@ $$
 \mathbf d=\mathbf G\mathbf m.
 $$
 
+> **Note for the lab:** The graphical construction above subtracts the mean station velocity first, then solves for the four velocity-gradient parameters $a, b, c, d$. The lab's `fit_horizontal_strain` function takes a slightly different but equivalent approach: it solves for all **six** parameters — two translations ($t_E, t_N$), one rotation ($\dot\omega$), and three strain-rate components ($\dot\epsilon_{EE}, \dot\epsilon_{EN}, \dot\epsilon_{NN}$) — simultaneously in a single weighted least-squares system. Both formulations give the same strain-rate tensor and the same rotation rate; they differ only in whether translation is removed before or solved alongside the other parameters.
+
+
 ---
 
 ## Solve for the Velocity Gradient
@@ -920,6 +947,8 @@ Every map cell contains a strain-rate tensor and therefore two principal rates, 
 - **Large velocity misfit:** the smooth model does not reproduce the observations well.
 
 > **Note:** The shear-rate measure used in this figure is $\min(|\dot\epsilon_1|,|\dot\epsilon_2|)$ when the principal rates have opposite signs. It is different from the maximum engineering shear strain rate, $|\dot\epsilon_1-\dot\epsilon_2|$.
+
+> **Lab reference:** In the lab, you will compare your computed tensor magnitude, dilatation, and Kreemer shear rate with the colors shown in panels (a)–(c) of this figure near Cascadia and northern California.
 
 > **Interpret:** Where is deformation concentrated? How does the broad contraction in Cascadia differ from the narrow deformation along the San Andreas fault system?
 
