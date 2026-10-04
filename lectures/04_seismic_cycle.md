@@ -244,6 +244,21 @@ Averaged LOS velocity profiles perpendicular to the fault over Central Californi
 
 The central San Andreas (Parkfield to San Juan Bautista) and the Hayward fault creep at measurable rates. A surface-creeping fault stores less slip deficit and poses a different seismic hazard than a fully locked fault at the same slip rate.
 
+### A model for partial coupling
+
+A partially coupled fault produces a velocity profile that combines two contributions:
+
+$$
+v_\parallel(x) = \phi \frac{V_s}{\pi} \arctan\!\left(\frac{x}{D}\right) + (1 - \phi)\frac{V_s}{2}\tanh\!\left(\frac{x}{w}\right)
+$$
+
+- The **first term** is the familiar Savage–Burford profile, scaled by the coupling fraction $\phi$. It is broad, with a transition width set by the locking depth $D$.
+- The **second term** represents slip reaching the surface, approximated by a $\tanh$ with a small surface creep width $w \ll D$. For small $w$ this is essentially a step function at the fault — the sharp velocity discontinuity you would observe if the fault creeps all the way to the surface.
+
+When $\phi = 1$ the second term vanishes and you recover the fully locked arctangent profile. When $\phi = 0$ the first term vanishes and you see only a sharp surface step. At intermediate $\phi$ both contributions are present: the profile is broad but also has an additional sharp gradient right at the fault.
+
+> **Key diagnostic:** a sharper-than-expected near-fault velocity gradient — one that cannot be reproduced by reducing locking depth alone — is evidence of surface creep. In the lab you will fit this model to Parkfield data and recover $\phi$ directly.
+
 👉 **Far-field plate motion alone does not determine earthquake potential.** The coupling fraction must be considered.
 
 ---
@@ -520,6 +535,18 @@ in both space and time. Separating them requires dense spatial coverage, long
 time series, and mechanical forward models. The GNSS era has made this 
 possible for the first time.
 
+### Isolating the postseismic signal in practice
+
+Before fitting any model to postseismic data, two signals must be removed from the raw position time series:
+
+1. **The interseismic trend.** Fit a straight line to the pre-earthquake portion of the record (typically the year before the event, excluding the last few days which may contain foreshock deformation). Extrapolate this trend through the postseismic period and subtract it. This removes the steady background plate motion.
+
+2. **The coseismic step.** Estimate the permanent offset as the difference between the extrapolated pre-earthquake trend and the first post-earthquake observation (typically starting 2–3 days after the event, once the data stabilize). Subtract this offset so that the postseismic time series starts near zero.
+
+What remains is the postseismic residual — the signal you fit with an afterslip model, a poroelastic model, or a viscoelastic relaxation model.
+
+Both choices involve a window, and the results are sensitive to those windows. A short pre-earthquake window may give a noisy trend estimate; a window that starts too soon after the event includes early postseismic deformation in the trend fit. Quantifying sensitivity to these choices is part of any rigorous postseismic analysis.
+
 👉 A velocity field measured within a decade of a major earthquake may include 
 significant postseismic signal — this is not interseismic loading and should 
 not be interpreted as such.
@@ -533,8 +560,9 @@ In the lab, you will:
 1. rotate North America-fixed GNSS velocities into San Andreas fault coordinates
 2. construct a fault-perpendicular velocity profile across the SAF
 3. fit the Savage–Burford model to recover slip rate, locking depth, and a velocity offset
-4. examine how creep modifies the predicted profile
+4. fit the partial-coupling model to a creeping segment (Parkfield) and recover the coupling fraction $\phi$
 5. convert a slip-deficit rate and recurrence interval into a moment budget
+6. fit a logarithmic afterslip model to postseismic GNSS time series from the 2019 Ridgecrest M7.1
 
 In the coming weeks, we will move from this 1D forward model to full 3D elastic dislocation models — the Okada (1985) formulation — and then to the inverse problem: recovering fault slip from observed surface deformation.
 
