@@ -23,6 +23,7 @@ Before calculating anything, describe the pattern:
 
 ```{figure} ../figures/03_western_us_velocity_field.jpg
 ---
+name: West US Velocity Field
 width: 700px
 alt: North America-fixed horizontal GNSS velocity field across the western United States.
 ---
@@ -94,6 +95,7 @@ Strain describes a **spatial gradient** in velocity. If neighboring stations hav
 
 ```{figure} ../figures/03_translation_rotation_strain.png
 ---
+name: Translation, Rotation, and Strain
 width: 900px
 alt: Three triangles illustrating translation, rigid rotation, and strain.
 ---
@@ -249,6 +251,7 @@ By convention, $\dot\epsilon_1\geq\dot\epsilon_2$. The corresponding eigenvector
 
 ```{figure} ../figures/03_strain_ellipse.png
 ---
+name: Strain Ellipse
 width: 520px
 alt: A circle deformed into an ellipse with perpendicular major and minor principal axes.
 ---
@@ -285,6 +288,7 @@ The principal rates are the maximum and minimum normal strain rates. They do not
 
 ```{figure} ../figures/03_principal_strain.png
 ---
+name: Principal Strain
 width: 800px
 alt: Circles deforming under extension, contraction, and combined extension and contraction, with principal strain axes indicated.
 ---
@@ -372,6 +376,7 @@ Three non-collinear stations define a triangle. Their relative motions allow us 
 
 ```{figure} ../figures/03_strain_triangle_step_01.jpg
 ---
+name: Strain Triangle Step 1
 width: 620px
 alt: Three GNSS stations plotted at different east and north coordinates on a rectangular grid.
 ---
@@ -386,6 +391,7 @@ At each station, GNSS provides an east-west component, $v_E$, and a north-south 
 
 ```{figure} ../figures/03_strain_triangle_step_02.jpg
 ---
+name: Strain Triangle Step 2
 width: 620px
 alt: Three GNSS stations with separate blue arrows showing their east-west and north-south velocity components.
 ---
@@ -406,6 +412,7 @@ $$
 
 ```{figure} ../figures/03_strain_triangle_step_03.jpg
 ---
+name: Strain Triangle Step 3
 width: 620px
 alt: Three GNSS stations showing east and north components alongside the resulting diagonal velocity vectors.
 ---
@@ -420,6 +427,7 @@ If all three velocity vectors were identical, the triangle would translate witho
 
 ```{figure} ../figures/03_strain_triangle_step_04.jpg
 ---
+name: Strain Triangle Step 4
 width: 620px
 alt: Three GNSS stations with black arrows showing their total horizontal velocities.
 ---
@@ -434,6 +442,7 @@ We approximate the deformation inside the triangle as spatially uniform.
 
 ```{figure} ../figures/03_strain_triangle_step_05.jpg
 ---
+name: Strain Triangle Step 5
 width: 620px
 alt: A triangle connecting three GNSS stations, with a velocity arrow at each vertex.
 ---
@@ -460,6 +469,7 @@ $$
 
 ```{figure} ../figures/03_strain_triangle_step_06.jpg
 ---
+name: Strain Triangle Step 6
 width: 620px
 alt: A GNSS station triangle with construction lines drawn from each vertex to a central intersection marking the centroid.
 ---
@@ -486,6 +496,7 @@ This translation of the coordinate origin simplifies the calculation but does no
 
 ```{figure} ../figures/03_strain_triangle_step_07.jpg
 ---
+name: Strain Triangle Step 7
 width: 620px
 alt: GNSS station triangle plotted in a local coordinate system whose east and north axes intersect at the triangle centroid.
 ---
@@ -500,6 +511,7 @@ Imagine a circle painted on the ground near the center of the undeformed triangl
 
 ```{figure} ../figures/03_strain_triangle_step_08.jpg
 ---
+name: Strain Triangle Step 8
 width: 620px
 alt: A circle inscribed near the center of a triangular GNSS network.
 ---
@@ -526,6 +538,7 @@ $$
 
 ```{figure} ../figures/03_strain_triangle_step_09.jpg
 ---
+name: Strain Triangle Step 9
 width: 620px
 alt: GNSS station triangle containing a circle and an arrow from the centroid representing the mean station velocity.
 ---
@@ -540,6 +553,7 @@ Applying the observed velocities moves each vertex to a new position. The centro
 
 ```{figure} ../figures/03_strain_triangle_step_10.jpg
 ---
+name: Strain Triangle Step 10
 width: 620px
 alt: Original and displaced GNSS station triangles with an arrow connecting their centroids and a circle moving with the triangle.
 ---
@@ -568,6 +582,7 @@ The original and displaced centroids then coincide.
 
 ```{figure} ../figures/03_strain_triangle_step_11.jpg
 ---
+name: Strain Triangle Step 11
 width: 620px
 alt: Original and displaced station triangles being aligned by subtracting the arrow connecting their centroids.
 ---
@@ -582,6 +597,7 @@ Once the centroids are aligned, the remaining differences reflect a combination 
 
 ```{figure} ../figures/03_strain_triangle_step_12.jpg
 ---
+name: Strain Triangle Step 12
 width: 620px
 alt: Original and deformed station triangles superimposed at a common centroid with residual velocity arrows at their vertices.
 ---
@@ -596,6 +612,7 @@ The residual vectors $\mathbf v_i'$ describe how each station moves relative to 
 
 ```{figure} ../figures/03_strain_triangle_step_13.jpg
 ---
+name: Strain Triangle Step 13
 width: 620px
 alt: Superimposed original and deformed triangles with centered circles and residual vectors at the vertices.
 ---
@@ -728,6 +745,7 @@ If strain were equal in all directions, the circle would change size but remain 
 
 ```{figure} ../figures/03_strain_triangle_step_14.jpg
 ---
+name: Strain Triangle Step 14
 width: 620px
 alt: Circle deformed into an ellipse inside superimposed station triangles, with red major and blue minor principal axes.
 ---
@@ -789,6 +807,7 @@ The maximum principal axis is oriented $32.5^\circ$ counterclockwise from east; 
 
 ```{figure} ../figures/03_strain_triangle_step_15.jpg
 ---
+name: Strain Triangle Step 15
 width: 620px
 alt: Original circle and strain ellipse with perpendicular red and blue axes shown before and after deformation.
 ---
@@ -803,6 +822,7 @@ Reversing the relative motion shows that the strain ellipse differs from the ori
 
 ```{figure} ../figures/03_strain_triangle_step_16.jpg
 ---
+name: Strain Triangle Step 16
 width: 620px
 alt: Superimposed original and deformed triangles with a circle, strain ellipse, and two orientations of the principal axes.
 ---
@@ -821,6 +841,7 @@ For this example, $\dot\omega=-173.9$ nrad/yr: the triangle rotates clockwise wh
 
 ```{figure} ../figures/03_strain_triangle_step_17.jpg
 ---
+name: Strain Triangle Step 17
 width: 620px
 alt: Original and deformed triangles with two red principal-axis lines separated by an angle labeled omega.
 ---
@@ -834,6 +855,7 @@ The complete construction starts with the original triangle, the conceptual circ
 
 ```{figure} ../figures/03_strain_triangle_step_18.jpg
 ---
+name: Strain Triangle Step 18
 width: 620px
 alt: Undeformed GNSS station triangle containing a circle, with a velocity vector at each vertex.
 ---
@@ -847,6 +869,7 @@ Each vertex follows its own velocity vector. Differences among the vectors cause
 
 ```{figure} ../figures/03_strain_triangle_step_19.jpg
 ---
+name: Strain Triangle Step 19
 width: 620px
 alt: GNSS station triangle with multiple arrows illustrating motion of each vertex toward its displaced position.
 ---
@@ -860,6 +883,7 @@ After the common translation is removed, the final triangle and strain ellipse s
 
 ```{figure} ../figures/03_strain_triangle_step_20.jpg
 ---
+name: Strain Triangle Step 20
 width: 620px
 alt: Deformed station triangle centered on a strain ellipse with red major and blue minor principal axes; original station positions remain marked outside the triangle.
 ---
@@ -875,7 +899,7 @@ The principal rates give the quantities shown in panels (a)--(c) of Kreemer and 
 |---|---|---:|
 | Tensor magnitude | $\sqrt{\dot\epsilon_1^2+\dot\epsilon_2^2}$ | 266.6 nstrain/yr |
 | Dilatation | $\dot\epsilon_1+\dot\epsilon_2$ | -243.5 nstrain/yr |
-| Kreemer shear rate | $\min(|\dot\epsilon_1|,|\dot\epsilon_2|)$ | 22.2 nstrain/yr |
+| Kreemer shear rate | $\min(\lvert\dot\epsilon_1\rvert,\lvert\dot\epsilon_2\rvert)$ | 22.2 nstrain/yr |
 
 The Kreemer shear rate is used only when the two principal rates have opposite signs; otherwise it is zero.
 
@@ -897,12 +921,23 @@ The Kreemer shear rate is used only when the two principal rates have opposite s
 
 ## The Answer Depends on the Region You Sample
 
-```{figure} ../figures/04_spatial_scale.png
+- **The triangle is a spatial average.** The fitted tensor is one number averaged over the entire enclosed area — not a point measurement at any location inside it.
+
+- **Large triangles mix tectonic regimes.** A triangle spanning Kansas, the PNW, and California straddles the stable craton, Cascadia, and the San Andreas. The result is a blend of all three that accurately describes none of them.
+
+- **Distant stations dilute local signals.** A tight triangle around the Cascadia forearc captures locking-related shortening. Add a station 3,000 km away and the same signal is spread over a continent-sized area and largely disappears.
+
+- **Strain rate is a velocity gradient — triangle size sets the denominator.** A 30 mm/yr velocity difference across a 3,000 km triangle gives ~10 nstrain/yr; across a 100 km triangle it gives ~300 nstrain/yr. Same velocity contrast, very different apparent strain rate.
+
+- **This is why published maps use explicit smoothing windows.** Kreemer and Young choose their smoothing radius to match local station density, so the spatial scale of the result is consistent and stated — not an accident of which three stations happened to be chosen.
+
+```{figure} ../figures/03_western_us_velocity_field.jpg
 ---
-width: 650px
-alt: Small and large station triangles sampling a spatially variable velocity field.
+name: West US Velocity Field
+width: 700px
+alt: North America-fixed horizontal GNSS velocity field across the western United States.
 ---
-A small triangle can resolve localized deformation but is sensitive to individual stations. A large triangle is more stable but averages across structures and may mix tectonic regimes.
+North America-fixed horizontal GNSS velocities across the western United States. Color represents velocity magnitude; gray-outlined vectors are based on campaign measurements. The velocities have been corrected for postseismic viscoelastic deformation following large regional earthquakes. From [Kreemer and Young (2022)](https://pubs.geoscienceworld.org/ssa/srl/article/93/6/2990/615948/Crustal-Strain-Rates-in-the-Western-United-States).
 ```
 
 > **Prediction:** How might a triangle spanning both Cascadia and the Basin and Range differ from one confined to the coastal forearc?
@@ -928,10 +963,11 @@ Kreemer and Young (2022) use a more robust implementation: triangle-based estima
 
 ```{figure} ../figures/03_geodetic_strain_rate.png
 ---
+name: Geodetic strain rate field
 width: 800px
 alt: Four maps of the western United States showing geodetic strain-rate magnitude, dilatation, shear rate, and velocity-model misfit.
 ---
-Geodetic strain-rate field. (a) Second invariant of the tensor, $\sqrt{\dot\epsilon_1^2+\dot\epsilon_2^2}$; (b) dilatation rate, $\dot\epsilon_1+\dot\epsilon_2$; (c) shear rate, $\min(|\dot\epsilon_1|,|\dot\epsilon_2|)$ when $\dot\epsilon_1$ and $\dot\epsilon_2$ have opposite signs and zero otherwise; and (d) misfit, $\sqrt{[(v_E^{obs}-v_E^{mod})^2+(v_N^{obs}-v_N^{mod})^2]/2}$, between observed and modeled velocities. Figure 2 from [Kreemer and Young (2022)](https://doi.org/10.1785/0220220153).
+Geodetic strain-rate field. (a) Second invariant of the tensor, $\sqrt{\dot\epsilon_1^2+\dot\epsilon_2^2}$; (b) dilatation rate, $\dot\epsilon_1+\dot\epsilon_2$; (c) shear rate, $\min(\lvert\dot\epsilon_1\rvert,\lvert\dot\epsilon_2\rvert)$ when $\dot\epsilon_1$ and $\dot\epsilon_2$ have opposite signs and zero otherwise; and (d) misfit, $\sqrt{[(v_E^{obs}-v_E^{mod})^2+(v_N^{obs}-v_N^{mod})^2]/2}$, between observed and modeled velocities. Figure 2 from [Kreemer and Young (2022)](https://doi.org/10.1785/0220220153).
 ```
 
 ---
@@ -946,7 +982,7 @@ Every map cell contains a strain-rate tensor and therefore two principal rates, 
 - **Large shear rate:** extension and contraction occur simultaneously along perpendicular axes.
 - **Large velocity misfit:** the smooth model does not reproduce the observations well.
 
-> **Note:** The shear-rate measure used in this figure is $\min(|\dot\epsilon_1|,|\dot\epsilon_2|)$ when the principal rates have opposite signs. It is different from the maximum engineering shear strain rate, $|\dot\epsilon_1-\dot\epsilon_2|$.
+> **Note:** The shear-rate measure used in this figure is $\min(\lvert\dot\epsilon_1\rvert,\lvert\dot\epsilon_2\rvert)$ when the principal rates have opposite signs. It is different from the maximum engineering shear strain rate, $|\dot\epsilon_1-\dot\epsilon_2|$.
 
 > **Lab reference:** In the lab, you will compare your computed tensor magnitude, dilatation, and Kreemer shear rate with the colors shown in panels (a)–(c) of this figure near Cascadia and northern California.
 
