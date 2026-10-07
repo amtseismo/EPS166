@@ -37,6 +37,7 @@ project:
         - file: lectures/05_seismology
         - file: notebooks/05_seismology
         - file: lectures/06_dems_lidar
+		- file: notebooks/06_wallace_creek
 		
     - title: Week 4 — Satellite Remote Sensing
       children:
