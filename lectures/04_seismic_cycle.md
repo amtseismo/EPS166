@@ -158,6 +158,15 @@ The Savage–Burford model assumes a vertical fault. Real fault systems deviate 
 
 For strike-slip faults at shallow dip, the arctan model is a good first approximation. For subduction zones, it fails — and that failure is itself informative.
 
+```{figure} ../figures/04_3v1.png
+---
+name: Three vs. one fault
+width: 700px
+alt: Deformation profile across three distributed vs. one deep fault
+---
+Displacement profile across three distributed vs. one deep fault
+```
+
 ---
 
 # Creep
@@ -227,11 +236,11 @@ Surface creep rates on major northern California fault segments from geodetic ob
 
 ## Coupling
 
-The **coupling fraction** $\phi$ describes how much of the long-term plate motion accumulates as elastic strain:
+The **coupling fraction** $C$ describes how much of the long-term plate motion accumulates as elastic strain:
 
-- $\phi = 1$: fully coupled — all motion stored as elastic strain, maximum earthquake potential
-- $\phi = 0$: freely creeping — motion released continuously, little elastic strain accumulates
-- $0 < \phi < 1$: partially coupled — mixed behavior
+- $C = 1$: fully coupled — all motion stored as elastic strain, maximum earthquake potential
+- $C = 0$: freely creeping — motion released continuously, little elastic strain accumulates
+- $0 < C < 1$: partially coupled — mixed behavior
 
 ```{figure} ../figures/04_creep_profile.png
 ---
@@ -249,15 +258,15 @@ The central San Andreas (Parkfield to San Juan Bautista) and the Hayward fault c
 A partially coupled fault produces a velocity profile that combines two contributions:
 
 $$
-v_\parallel(x) = \phi \frac{V_s}{\pi} \arctan\!\left(\frac{x}{D}\right) + (1 - \phi)\frac{V_s}{2}\tanh\!\left(\frac{x}{w}\right)
+v_\parallel(x) = C \frac{V_s}{\pi} \arctan\!\left(\frac{x}{D}\right) + (1 - C)\frac{V_s}{2}\tanh\!\left(\frac{x}{w}\right)
 $$
 
-- The **first term** is the familiar Savage–Burford profile, scaled by the coupling fraction $\phi$. It is broad, with a transition width set by the locking depth $D$.
+- The **first term** is the familiar Savage–Burford profile, scaled by the coupling fraction $C$. It is broad, with a transition width set by the locking depth $D$.
 - The **second term** represents slip reaching the surface, approximated by a $\tanh$ with a small surface creep width $w \ll D$. For small $w$ this is essentially a step function at the fault — the sharp velocity discontinuity you would observe if the fault creeps all the way to the surface.
 
-When $\phi = 1$ the second term vanishes and you recover the fully locked arctangent profile. When $\phi = 0$ the first term vanishes and you see only a sharp surface step. At intermediate $\phi$ both contributions are present: the profile is broad but also has an additional sharp gradient right at the fault.
+When $C = 1$ the second term vanishes and you recover the fully locked arctangent profile. When $C = 0$ the first term vanishes and you see only a sharp surface step. At intermediate $C$ both contributions are present: the profile is broad but also has an additional sharp gradient right at the fault.
 
-> **Key diagnostic:** a sharper-than-expected near-fault velocity gradient — one that cannot be reproduced by reducing locking depth alone — is evidence of surface creep. In the lab you will fit this model to Parkfield data and recover $\phi$ directly.
+> **Key diagnostic:** a sharper-than-expected near-fault velocity gradient — one that cannot be reproduced by reducing locking depth alone — is evidence of surface creep. In the lab you will fit this model to San Juan Bautista data and recover $C$ directly.
 
 👉 **Far-field plate motion alone does not determine earthquake potential.** The coupling fraction must be considered.
 
@@ -292,10 +301,10 @@ Several features of the Cascadia coupling map are worth noting:
 
 ## Interseismic Loading to Future Slip
 
-For constant long-term rate $V_s$, coupling fraction $\phi$, and elapsed time $T$:
+For constant long-term rate $V_s$, coupling fraction $C$, and elapsed time $T$:
 
 $$
-S_{\text{deficit}} = \phi \, V_s \, T
+S_{\text{deficit}} = C \, V_s \, T
 $$
 
 Example for the southern San Andreas:
@@ -325,10 +334,10 @@ $$
 Substituting the slip deficit:
 
 $$
-M_w = \frac{2}{3}\log_{10}\!\left(\mu \, L \, W \, \phi \, V_s \, T\right) - 9.1
+M_w = \frac{2}{3}\log_{10}\!\left(\mu \, L \, W \, C \, V_s \, T\right) - 9.1
 $$
 
-The estimate depends on rupture dimensions, shear modulus, coupling, recurrence interval, and the fraction of the deficit released coseismically.
+The estimate depends on rupture dimensions, shear modulus, coupling fraction $C$, recurrence interval, and the fraction of the deficit released coseismically.
 
 ```{figure} ../figures/04_recurrence_magnitude.png
 ---
@@ -469,17 +478,6 @@ geometry — stations close to the fault move most.
 This logarithmic signature is a key diagnostic distinguishing afterslip from 
 viscoelastic relaxation.
 
-```{figure} ../figures/04_afterslip_literature.png
----
-width: 700px
-alt: Map and GNSS time series showing postseismic afterslip following a 
-major earthquake from the published literature.
----
-[Add published afterslip figure here — good options include Perfettini et al. 
-(2010) for the 2007 Pisco Peru earthquake, or Twardzik et al. (2019) for 
-Ridgecrest postseismic.]
-```
-
 ---
 
 ## Poroelastic Rebound
@@ -560,7 +558,7 @@ In the lab, you will:
 1. rotate North America-fixed GNSS velocities into San Andreas fault coordinates
 2. construct a fault-perpendicular velocity profile across the SAF
 3. fit the Savage–Burford model to recover slip rate, locking depth, and a velocity offset
-4. fit the partial-coupling model to a creeping segment (Parkfield) and recover the coupling fraction $\phi$
+4. fit the partial-coupling model to a creeping segment (Parkfield) and recover the coupling fraction $C$
 5. convert a slip-deficit rate and recurrence interval into a moment budget
 6. fit a logarithmic afterslip model to postseismic GNSS time series from the 2019 Ridgecrest M7.1
 
