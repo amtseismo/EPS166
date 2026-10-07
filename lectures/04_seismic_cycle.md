@@ -253,7 +253,9 @@ Averaged LOS velocity profiles perpendicular to the fault over Central Californi
 
 The central San Andreas (Parkfield to San Juan Bautista) and the Hayward fault creep at measurable rates. A surface-creeping fault stores less slip deficit and poses a different seismic hazard than a fully locked fault at the same slip rate.
 
-### A model for partial coupling
+---
+
+## A model for partial coupling
 
 A partially coupled fault produces a velocity profile that combines two contributions:
 
@@ -269,6 +271,15 @@ When $C = 1$ the second term vanishes and you recover the fully locked arctangen
 > **Key diagnostic:** a sharper-than-expected near-fault velocity gradient — one that cannot be reproduced by reducing locking depth alone — is evidence of surface creep. In the lab you will fit this model to San Juan Bautista data and recover $C$ directly.
 
 👉 **Far-field plate motion alone does not determine earthquake potential.** The coupling fraction must be considered.
+
+```{figure} ../figures/04_partial_coupling.png
+---
+name: Partial coupling model
+width: 680px
+alt: Fault-parallel velocity profiles for three coupling fractions showing fully locked, intermediate, and freely creeping end-members across a vertical strike-slip fault.
+---
+Synthetic fault-parallel velocity profiles for a vertical strike-slip fault with slip rate $V = 30$ mm/yr and locking depth $D = 15$ km, for three values of the coupling fraction $C$. All three curves approach the same far-field amplitude ($\pm V/2$), demonstrating that far-field velocities alone cannot distinguish coupling fraction from slip rate. The near-fault velocity gradient — specifically whether a sharp step is present at $x = 0$ — is the primary observable diagnostic of surface creep.
+```
 
 ---
 
@@ -533,7 +544,9 @@ in both space and time. Separating them requires dense spatial coverage, long
 time series, and mechanical forward models. The GNSS era has made this 
 possible for the first time.
 
-### Isolating the postseismic signal in practice
+---
+
+## Isolating the postseismic signal in practice
 
 Before fitting any model to postseismic data, two signals must be removed from the raw position time series:
 
