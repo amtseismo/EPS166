@@ -8,11 +8,11 @@ In this lecture, we will:
 
 - define remote sensing and distinguish passive from active approaches
 - explain how electromagnetic radiation propagates and why only certain wavelength windows reach the ground
-- describe how optical satellites acquire multispectral images
-- explain the difference between line-scanning and push-broom instruments
+- explain how optical satellites build an image, and distinguish line-scanning from push-broom instruments
+- describe the spectral bands used by Landsat and explain what each reveals about the surface
+- interpret false-color composites and spectral indices such as NDVI
 - distinguish free and commercial satellite missions and their trade-offs
-- interpret false-color imagery and spectral indices
-- understand why sun-synchronous orbits matter for time-series analysis
+- explain sub-pixel correlation and how it extends optical and radar imagery to displacement measurement
 - identify how optical imagery is used to measure crustal deformation
 
 ---
@@ -21,7 +21,7 @@ In this lecture, we will:
 
 ## What Is Remote Sensing?
 
-**Remote sensing** is the use of electromagnetic radiation — heat, light, or radio waves — to detect and measure the characteristics of a distant target. The platform can be on the ground, on an aircraft, or in space. In this course we focus almost entirely on **satellite** platforms.
+**Remote sensing** is the use of electromagnetic radiation — heat, light, or radio waves — to detect and measure the characteristics of a distant target. The platform can be on the ground, on an aircraft, or in space. In the next couple of lectures we will focus on **satellite** platforms.
 
 Remote sensing methods divide into two fundamental categories:
 
@@ -41,6 +41,7 @@ The difference between four major types of remote sensors: passive sensors (mult
 > **Why passive matters for tectonics:** The first widely available satellite imagery that revealed the continent-scale network of active faults was passive optical data. The 1975 cover of *Science* magazine showed a mosaic of early Landsat images across Asia, with fault traces clearly visible in the landscape for the first time at regional scale.
 
 ---
+
 
 # Electromagnetic Radiation
 
@@ -92,7 +93,7 @@ The spectrum of radiation from the sun that reaches the top of the Earth’s atm
 
 ## Atmospheric Windows
 
-The result is a set of **atmospheric windows** — wavelength ranges where transmission is high and satellites can actually observe the surface:
+**Atmospheric windows** are wavelength ranges where transmission is high and satellites can actually observe the surface:
 
 | Window | Wavelength | Key absorbers (outside window) |
 |---|---|---|
@@ -117,35 +118,22 @@ Atmospheric transmittance as a function of wavelength. Satellite instruments are
 
 ---
 
-# Imaging Earth From Space
 
-## The Landsat Record
+# How Optical Satellites Work
 
-The Landsat mission is the longest-running civilian Earth observation programme. It began in 1972 with the launch of ERTS-1 (Earth Resources Technology Satellite 1), later renamed Landsat 1, and has continued through Landsat 9 (launched 2021).
+## How We See Color
 
-This continuity is scientifically invaluable. A 50-year archive of the same locations, acquired with consistent geometry and calibration, allows us to detect slow changes in land cover, glacier extent, river migration — and fault creep.
+The human eye is itself a multispectral sensor. The retina contains two types of photoreceptors:
 
-Each generation carried a progressively more capable instrument: the Multispectral Scanner (MSS), Thematic Mapper (TM), Enhanced Thematic Mapper Plus (ETM+), and — on the current satellites — the Operational Land Imager (OLI) paired with the Thermal Infrared Sensor (TIRS).
+- **Rods** — panchromatic sensors that detect light intensity but not color. They dominate in low-light conditions, which is why we cannot distinguish colors in the dark.
+- **Cones** — three types, each sensitive to a different wavelength range (broadly: blue, green, red). Their combined signals create the perception of color.
 
-| Satellites | Instrument | Years active | Key capability |
-|---|---|---|---|
-| Landsat 1–3 | MSS | 1972–1983 | 4 bands (VIS + NIR), 80 m |
-| Landsat 4–5 | TM | 1982–2013 | 7 bands, 30 m; Landsat 5 lasted 29 years |
-| Landsat 7 | ETM+ | 1999–present | Added 15 m panchromatic |
-| Landsat 8–9 | OLI + TIRS | 2013–present | 11 bands, push-broom, 30 m / 15 m pan |
+The visual system in the brain interprets three numbers — the outputs of the three cone types — and constructs the full range of colors we perceive. This is why **any image display only needs three channels** (red, green, blue) to reproduce all visible colors.
 
-Landsat 5 vastly exceeded its design life, remaining operational for 29 years. In that time, Landsat 6 was launched and failed to reach orbit. Overlapping launch dates throughout the programme ensured there was no gap in the archive.
-
-```{figure} ../figures/07_landsat_timeline.png
----
-name: Landsat missions
-width: 800px
-alt: This is an image depicting the timeline of the Landsat program, from Landsat 1, which launched in 1972, through Landsat 9, currently being built. The hashed lines for Landsats 7-9 indicate the uncertain lifespan of the satellites. Landsat 6 failed to reach orbit on launch.
----
-The Landsat mission timeline. Overlapping launches ensured continuity of the archive. Landsat 5 vastly exceeded its design life, operating for 29 years.  The hashed lines for Landsats 7-9 indicate the uncertain lifespan of the satellites. Landsat 6 failed to reach orbit on launch.
-```
+Satellite sensors extend this principle: instead of three bands restricted to visible wavelengths, they record many bands across a much wider spectrum.
 
 ---
+
 
 ## How Do Optical Satellites Acquire Images?
 
@@ -172,20 +160,8 @@ Whiskbroom-type imaging instrument and pushbroom-type imaging instrument.
 
 ---
 
-# Spectral Bands and Color
 
-## How We See Color
-
-The human eye is itself a multispectral sensor. The retina contains two types of photoreceptors:
-
-- **Rods** — panchromatic sensors that detect light intensity but not color. They dominate in low-light conditions, which is why we cannot distinguish colors in the dark.
-- **Cones** — three types, each sensitive to a different wavelength range (broadly: blue, green, red). Their combined signals create the perception of color.
-
-The visual system in the brain interprets three numbers — the outputs of the three cone types — and constructs the full range of colors we perceive. This is why **any image display only needs three channels** (red, green, blue) to reproduce all visible colors.
-
-Satellite sensors extend this principle: instead of three bands restricted to visible wavelengths, they record many bands across a much wider spectrum.
-
----
+# Spectral Bands
 
 ## Landsat 8 Spectral Bands
 
@@ -214,7 +190,85 @@ alt: Landsat spectral bands superimposed on the atmospheric windows.
 ---
 Landsat spectral band graphic showing the evolution of Landsat's spectral bands from the first generation Multispectral Scanner System (MSS) to Landsat 9's Operational Land Imager 2 (OLI-2).
 ```
+
 ---
+
+
+## Evolution of Spectral Bands
+
+Since Landsat 1 in 1972, each new instrument has added or refined spectral bands based on input from scientists across disciplines. The **Thematic Mapper** (TM) band placement has proven so influential that it is echoed in almost all modern passive remote sensing systems — domestic, international, commercial, and even instruments observing other planets.
+
+The key additions across generations:
+
+- **MSS (Landsat 1–5):** Four bands in visible and NIR — the digital equivalent of wartime colour-infrared film. A fifth thermal band flew briefly on Landsat 3 but failed shortly after launch, foreshadowing the thermal capabilities that would come later.
+- **TM (Landsat 4–5):** Expanded to seven bands, adding blue (enabling true-colour imagery for the first time) and two SWIR bands for vegetation and mineral mapping. Resolution improved from 80 m to 30 m.
+- **ETM+ (Landsat 7):** Added the 15 m panchromatic band for pansharpening; improved thermal capabilities enabled evapotranspiration estimates from irrigated fields and natural ecosystems.
+- **OLI + TIRS (Landsat 8–9):** Expanded to 11 bands, adding a coastal/aerosol band and a cirrus-detection band; the thermal channel was split into two separate bands for improved atmospheric correction.
+
+---
+
+## What Each Spectral Band Measures
+
+The following summarises the physical meaning and primary applications of each band type across the Landsat series.
+
+### Coastal / Aerosol (OLI Band 1, 0.43–0.45 µm)
+
+New on Landsat 8/9, this band extends monitoring into deep blue wavelengths — shorter than the standard blue band. It is used to:
+
+- monitor **ocean colour** and chlorophyll concentrations in coastal and shallow inland waters
+- detect **phytoplankton blooms** and assess water quality
+- characterise atmospheric **aerosols** — dust, smoke, and haze — since light at these wavelengths scatters strongly from fine particles
+
+### Blue (TM Band 1 / OLI Band 2, 0.45–0.52 µm)
+
+The blue band penetrates clear water more effectively than other visible bands, supporting **bathymetric mapping**, reef surveys, and coastal zone monitoring. It also detects subtle differences in chlorophyll absorption and enabled the first natural-colour Landsat images when it was introduced on Landsat 4. A limitation: blue wavelengths scatter strongly in the atmosphere, making this band the most affected by haze.
+
+### Green (TM Band 2 / OLI Band 3, 0.52–0.59 µm)
+
+The green band captures the peak of vegetation reflectance in visible wavelengths — the reason leaves appear green to our eyes. Applications include identifying plant types, monitoring crop growth, and mapping changes in land cover. In water, the green band provides information on turbidity and suspended sediment.
+
+### Red (TM Band 3 / OLI Band 4, 0.63–0.67 µm)
+
+Chlorophyll absorbs strongly in red wavelengths to drive photosynthesis, so healthy vegetation appears dark in this band. This strong contrast makes red the key band for **vegetation discrimination** and forms one half of the NDVI index ($\rho_\text{red}$ in the denominator). Stress, disease, and senescence reduce chlorophyll content, reducing red absorption — allowing crop and ecosystem condition monitoring.
+
+### Near-Infrared (TM Band 4 / OLI Band 5, 0.76–0.88 µm)
+
+Healthy vegetation is highly reflective in the NIR — the structural cells in leaves scatter NIR strongly, while liquid water absorbs it. This makes NIR the single most powerful band for vegetation mapping. It also penetrates atmospheric haze more effectively than visible bands and delineates water bodies sharply (strong absorption in water). NIR forms the other half of NDVI ($\rho_\text{NIR}$ in the numerator) and is used to measure biomass and vegetation density.
+
+### Shortwave-Infrared (TM Bands 5 & 7 / OLI Bands 6 & 7, 1.57–1.65 µm and 2.11–2.29 µm)
+
+SWIR bands are absorbed by liquid water in plant leaves, making them sensitive to **leaf water content** and allowing species identification based on leaf succulency. They are particularly valuable for:
+
+- **Mineral mapping**: the 2.1–2.3 µm range detects absorption features of hydrothermal clay minerals, supporting mineral and petroleum exploration. Many alteration minerals associated with ore deposits have diagnostic SWIR signatures.
+- **Soil mapping**: distinguishing soil types in semi-arid regions.
+- **Wildfire monitoring**: SWIR is less affected by scattering from smoke and dust than visible bands, allowing surface observation through smoke plumes.
+
+> **Geological significance:** The SWIR geology composite (SWIR-2 → red, SWIR-1 → green, Red → blue) exploits these mineral absorption features directly. Hydrothermal alteration zones, clay-rich fault gouges, and iron oxide deposits produce distinctive colours invisible in true-colour imagery — making SWIR bands among the most useful Landsat channels for structural geology and lithological mapping.
+
+### Panchromatic (ETM+ Band 8 / OLI Band 8, 0.50–0.68 µm)
+
+The panchromatic band spans a broad visible wavelength range at **15 m resolution** — twice the spatial detail of the multispectral bands. It is used primarily for **pansharpening**: combining the high-resolution greyscale panchromatic image with lower-resolution colour multispectral bands to produce a single high-resolution colour image. The panchromatic band is also used for detailed urban mapping and land cover analysis.
+
+### Cirrus (OLI Band 9, 1.36–1.38 µm)
+
+This band sits within a water vapour absorption feature. Ground-level surfaces appear dark because their upwelling radiation is absorbed before reaching the sensor. High, thin **cirrus clouds** are above most of the water vapour column and appear bright, making this band an effective cirrus detector. Undetected cirrus contamination in other bands can corrupt land surface measurements, so band 9 is used to flag and mask affected pixels.
+
+### Thermal Infrared (TM Band 6 / ETM+ Band 6 / TIRS Bands 10 & 11, 10.4–12.5 µm)
+
+Thermal bands detect **emitted heat** from the Earth's surface rather than reflected sunlight — fundamentally different from all the bands above. Key applications include:
+
+- **Land surface temperature**: monitoring urban heat islands, drought stress, and wildfire burn scars
+- **Evapotranspiration**: combining thermal and reflective bands to estimate water consumption in irrigated fields and natural ecosystems — one of the most heavily requested Landsat capabilities
+- **Volcanic activity**: mapping lava flows, geothermal fields, and eruption monitoring
+- **Geological thermal inertia**: different rock and soil types heat and cool at different rates through the day, aiding mineral and petroleum exploration
+- **Sea ice and water temperature**: including iceberg calving, lake temperatures, and coastal upwelling
+
+Landsat 8/9 split the thermal channel into two bands (10.6–11.2 µm and 11.5–12.5 µm). The small difference in atmospheric absorption between the two channels enables the **split-window algorithm**, which corrects for water vapour in the atmosphere and yields more accurate surface temperature retrievals.
+
+---
+
+
+# What the Bands Reveal
 
 ## False-Colour Imagery
 
@@ -245,6 +299,7 @@ A selection of common Landsat band combinations and what each reveals about the 
 > **Prediction:** In a CIR image, what color would fresh lava appear, and why?
 
 ---
+
 
 ## The Normalized Difference Vegetation Index (NDVI)
 
@@ -292,7 +347,40 @@ NDVI is useful in geology wherever vegetation follows geological boundaries — 
 
 ---
 
+
+> **From observation to measurement:** The spectral tools above — band combinations, indices, and composites — are part of Earth observation broadly. In the remainder of this lecture we narrow our focus: first to the constellation of satellites that provide this data, then to the specific question of how optical imagery is used to measure ground displacement.
+
+---
+
 # Satellite Missions
+
+## The Landsat Record
+
+The Landsat mission is the longest-running civilian Earth observation programme. It began in 1972 with the launch of ERTS-1 (Earth Resources Technology Satellite 1), later renamed Landsat 1, and has continued through Landsat 9 (launched 2021).
+
+This continuity is scientifically invaluable. A 50-year archive of the same locations, acquired with consistent geometry and calibration, allows us to detect slow changes in land cover, glacier extent, river migration — and fault creep.
+
+Each generation carried a progressively more capable instrument: the Multispectral Scanner (MSS), Thematic Mapper (TM), Enhanced Thematic Mapper Plus (ETM+), and — on the current satellites — the Operational Land Imager (OLI) paired with the Thermal Infrared Sensor (TIRS).
+
+| Satellites | Instrument | Years active | Key capability |
+|---|---|---|---|
+| Landsat 1–3 | MSS | 1972–1983 | 4 bands (VIS + NIR), 80 m |
+| Landsat 4–5 | TM | 1982–2013 | 7 bands, 30 m; Landsat 5 lasted 29 years |
+| Landsat 7 | ETM+ | 1999–present | Added 15 m panchromatic |
+| Landsat 8–9 | OLI + TIRS | 2013–present | 11 bands, push-broom, 30 m / 15 m pan |
+
+Landsat 5 vastly exceeded its design life, remaining operational for 29 years. In that time, Landsat 6 was launched and failed to reach orbit. Overlapping launch dates throughout the programme ensured there was no gap in the archive.
+
+```{figure} ../figures/07_landsat_timeline.png
+---
+name: Landsat missions
+width: 800px
+alt: This is an image depicting the timeline of the Landsat program, from Landsat 1, which launched in 1972, through Landsat 9, currently being built. The hashed lines for Landsats 7-9 indicate the uncertain lifespan of the satellites. Landsat 6 failed to reach orbit on launch.
+---
+The Landsat mission timeline. Overlapping launches ensured continuity of the archive. Landsat 5 vastly exceeded its design life, operating for 29 years.  The hashed lines for Landsats 7-9 indicate the uncertain lifespan of the satellites. Landsat 6 failed to reach orbit on launch.
+```
+
+---
 
 ## Sentinel-2
 
@@ -305,14 +393,6 @@ Key specifications:
 - **Freely available** through the Copernicus Data Space
 
 Sentinel-2 does not carry a thermal band, but its higher spatial resolution and more frequent revisit make it particularly useful for tracking surface changes and pixel-tracking deformation.
-
-```{figure} ../figures/07_sentinel2_landsat_comparison.png
----
-width: 800px
-alt: Spectral band comparison between Sentinel-2 MSI and Landsat 8 OLI showing band positions and widths.
----
-Sentinel-2 and Landsat 8 spectral band comparison. Sentinel-2 achieves 10 m resolution in its visible and NIR bands and adds narrow red-edge bands for vegetation discrimination.
-```
 
 ---
 
@@ -346,12 +426,15 @@ A landmark demonstration of VHR imagery for tectonics came from IKONOS data of t
 
 They also documented a pull-apart extensional structure at a bend in the fault — something identifiable only because the resolution was sufficient to see individual rupture strands.
 
-```{figure} ../figures/07_vhr_kokoxili.png
+> **Method note:** Kokoxili is an example of **visual mapping** — the displacements are large enough (metres) and the resolution fine enough (1 m) that geomorphic offsets can be identified and measured by eye or by manually sliding image patches. This is distinct from automated sub-pixel correlation, which we cover below, and which is required when displacements are small relative to pixel size.
+
+```{figure} ../figures/07_klinger.png
 ---
+name: Kokoxili offsets from high res
 width: 800px
 alt: IKONOS imagery of the Kokoxili earthquake rupture showing offset stream channels and a pull-apart structure.
 ---
-IKONOS imagery of the 2001 Kokoxili earthquake rupture on the Kunlun fault, Tibet (Klinger et al., 2005). At 1 m resolution, offset stream channels and a pull-apart extensional structure are visible. Sliding image tiles to re-align features yields slip estimates along the rupture.
+IKONOS imagery of the 2001 Kokoxili earthquake rupture on the Kunlun fault, Tibet (Klinger et al., 2005). Offset of shoreline beach ridges east of large pull-part/push-up kink on the peninsula along the northern shore of Kusai Lake. (A) Profiles surveyed with the total station superimposed onto the HRS image. (B) 5.5-m retrodeformation of the shoreline to initial geometry before the Kokoxili event.
 ```
 
 ---
@@ -362,54 +445,19 @@ Planet Labs operates the **PlanetScope** constellation of over 130 CubeSats, pro
 
 Planet imagery was critical during the 2019 Ridgecrest, California earthquake sequence: images were acquired between the M6.4 and M7.1 mainshocks, allowing scientists to separate the surface ruptures produced by each event — something no other operational satellite could have provided at that moment.
 
+> **Method note:** The Ridgecrest example exploits Planet's **temporal frequency**, not sub-pixel correlation. Having an image between two large earthquakes in a sequence allowed visual identification of which ruptures belonged to which event. The pixel size (3–5 m) is too coarse for reliable sub-pixel displacement mapping of moderate events, but fine enough to see surface rupture traces directly in the imagery.
+
+```{figure} ../figures/07_planet.jpeg
 ---
-
-# Satellite Orbits
-
-## Orbital Mechanics
-
-Satellites orbit Earth on elliptical paths. For imaging satellites the orbits are nearly circular, at altitudes of roughly 500–800 km. The orbital period follows from Newton's laws:
-
-$$
-T = 2\pi\sqrt{\frac{r^3}{GM_\oplus}}
-$$
-
-where $r$ is the orbital radius, $G$ is the gravitational constant, and $M_\oplus$ is Earth's mass.
-
-| Altitude | Period | Examples |
-|---|---|---|
-| ~400 km | ~92 min | International Space Station |
-| ~700 km | ~100 min | Landsat, Sentinel-2 |
-| ~36,000 km | ~24 h | Geostationary (weather satellites) |
-
-At geostationary altitude, the orbital period matches Earth's rotation: the satellite hovers indefinitely above the same equatorial point. This is ideal for weather satellites and communications but impractical for high-resolution imaging — at 36,000 km, achieving 10 m resolution would require an impossibly large aperture.
-
+name: Planet satellites
+width: 600px
+alt: Shelf with planet satellites on it
 ---
-
-## Sun-Synchronous Orbits
-
-For time-series analysis of surface change, consistent illumination is essential. If a satellite imaged the same location at different times of day, shadows from topography would shift with solar angle, making it impossible to distinguish real surface change from illumination effects.
-
-The solution is a **sun-synchronous orbit**: the orbital plane precesses westward at the same rate Earth orbits the Sun (~1°/day eastward), so the satellite crosses every latitude at the same local solar time on every pass.
-
-This precession exploits the torque exerted by Earth's equatorial bulge on a slightly inclined polar orbit. By choosing altitude and inclination carefully, the precession rate can be set to exactly match Earth's orbital motion.
-
-For Landsat:
-- **16-day repeat cycle** (233 orbits before the ground track repeats)
-- **~10:00–10:30 AM** local solar time at every latitude
-- Consistent illumination geometry across the entire 50-year archive
-
-> Sun-synchronicity is why you can meaningfully compare a Landsat image from 1990 with one from today: the illumination angle is nearly identical.
-
-```{figure} ../figures/07_sun_synchronous_orbit.png
----
-width: 760px
-alt: Diagram of a sun-synchronous polar orbit showing the orbital plane rotating to keep pace with Earth's motion around the Sun.
----
-A sun-synchronous orbit precesses at ~1°/day westward, matching Earth's orbital motion around the Sun. The satellite always crosses a given latitude at the same local solar time, keeping illumination consistent throughout the year.
+Photo of the 28 Flock 1 nanosatellites before being sent to the launch site (Image credit: Planet Labs) 
 ```
 
 ---
+
 
 # Optical Imagery and Crustal Deformation
 
@@ -423,50 +471,101 @@ Two main approaches:
 At VHR, coseismic surface ruptures, offset stream channels, displaced fence lines, and landslide scarps can be identified and measured directly — as in the Kokoxili example above.
 
 **2. Pixel tracking (sub-pixel correlation)**
-Cross-correlating two images at the sub-pixel level yields a displacement field across the entire scene — not just at identifiable features. This works best when:
-- the surface has stable texture (rocks, bare ground, crops in a consistent state)
+Cross-correlating two images at the sub-pixel level yields a displacement field across the entire scene — not just at identifiable features. The key insight is that even shifts much smaller than one pixel are detectable. A pixel records the average brightness (or backscatter) of a fixed grid cell on the ground. As the ground shifts past that fixed grid, the average value in each cell changes slightly. A half-pixel shift is subtle but measurable; a tenth-of-a-pixel shift is very subtle but still within reach of a good correlator. In practice, the natural noise in the data sets a real lower limit on detectable displacements — typically around **1/10 pixel**.
+
+```{figure} ../figures/07_pt1.webp
+---
+name: Pixel Tracking 1
+width: 600px
+alt: Cartoon illustrating pixel offset tracking with an offset of the area below the fault of exactly one pixel.
+---
+Cartoon illustrating pixel offset tracking with an offset of the area below the fault of exactly one pixel. (Image Credit: [Earthquake Insights](https://earthquakeinsights.substack.com/p/surface-rupture-of-the-m77-azuero))
+```
+
+```{figure} ../figures/07_pt2.webp
+---
+name: Pixel Tracking 2
+width: 600px
+alt: Cartoon illustrating pixel offset tracking with an offset of the area below the fault of 0.5 pixels.
+---
+Cartoon illustrating pixel offset tracking with an offset of the area below the fault of 0.5 pixels. (Image Credit: [Earthquake Insights](https://earthquakeinsights.substack.com/p/surface-rupture-of-the-m77-azuero))
+```
+
+```{figure} ../figures/07_pt3.webp
+---
+name: Pixel Tracking 3
+width: 600px
+alt: Cartoon illustrating pixel offset tracking with an offset of the area below the fault of 0.1 pixels.
+---
+Cartoon illustrating pixel offset tracking with an offset of the area below the fault of 0.1 pixels. (Image Credit: [Earthquake Insights](https://earthquakeinsights.substack.com/p/surface-rupture-of-the-m77-azuero))
+```
+
+For every pixel in the "before" image, a window of surrounding data is taken and compared against the nearby "after" image to find the best-fit sub-pixel displacement. If the correlation quality is high enough, an offset vector is recorded. The result is a dense displacement field covering the entire scene.
+
+This works best when:
+- the surface has stable texture (bare rock, dry soil, urban fabric)
 - the two images have similar viewing geometry and illumination
 - deformation signals exceed the noise floor (~1/10 pixel)
 
 For Sentinel-2 at 10 m resolution, this corresponds to sensitivity of roughly **1 m** of surface displacement.
 
+### Optical vs radar pixel tracking
+
+The sub-pixel correlation method is not restricted to optical imagery — it applies equally to **radar amplitude images**. This matters because the two data sources have complementary strengths:
+
+| | Optical pixel tracking | Radar pixel tracking |
+|---|---|---|
+| Signal used | Reflected sunlight texture | Radar backscatter amplitude |
+| Works in cloud cover? | No | Yes |
+| Works at night? | No | Yes |
+| Affected by illumination angle? | Yes — shadows change between scenes | No |
+| Noise sources | Vegetation change, seasonal colour shifts | Atmospheric moisture, surface change |
+| Output offsets | Azimuth (along-track) + range (cross-track) | Along-track + slant-range |
+
+For a strike-slip fault running roughly parallel to a satellite's flight track, the **azimuth offset** (optical or radar) captures fault-parallel motion. This is the component that InSAR, which measures only line-of-sight phase change, largely misses — making pixel tracking a critical complement to interferometry for horizontal deformation.
+
+### The 2026 Azuero-Sona Earthquake, Panama — pixel tracking from radar
+
+A recent example that illustrates radar pixel tracking clearly is the October 2026 M7.7 earthquake on the Azuero-Sona fault in Panama (Bradley and Hubbard, 2026). NISAR radar data acquired before (2026-09-27) and after (2026-10-09) the earthquake were processed using pixel offset tracking on the radar amplitude images. 
+
+```{figure} ../figures/07_before.webp
 ---
-
-## Why Optical Complements InSAR for Strike-Slip Faults
-
-InSAR measures displacement in the **satellite line-of-sight (LOS)** direction — a mix of vertical and horizontal motion projected onto the look vector. For Sentinel-1, the look direction is ~35–40° from vertical and approximately perpendicular to the along-track direction.
-
-For a **strike-slip fault** trending parallel to the satellite track — such as the Hayward or San Andreas fault — fault-parallel horizontal motion is nearly perpendicular to the LOS. InSAR is largely insensitive to it:
-
-$$
-\text{InSAR sensitivity to strike-slip} \approx \sin(\delta)\sin(\alpha - \phi)
-$$
-
-where $\delta$ is the look angle from vertical, $\alpha$ is the look azimuth, and $\phi$ is the fault strike. When $\alpha \approx \phi$, sensitivity approaches zero.
-
-Optical pixel tracking measures displacement in **both range and azimuth directions**. The azimuth direction is approximately along-track — and therefore **parallel to a NW-trending fault**. This is precisely the component InSAR misses.
-
-> **This is why optical pixel tracking is the method of choice for measuring Hayward fault creep from space.** The ~5 mm/yr of surface creep on the Hayward fault is essentially invisible to InSAR but detectable in Sentinel-2 azimuth offsets accumulated over several years.
-
-```{figure} ../figures/07_insar_vs_optical_geometry.png
+name: NISAR before
+width: 800px
+alt: NISAR before the 2026 Azuero-Sona Earthquake, Panama
 ---
-width: 820px
-alt: Diagram comparing InSAR line-of-sight sensitivity and optical azimuth sensitivity for a strike-slip fault.
----
-InSAR LOS is nearly perpendicular to fault-parallel motion on a NW-trending strike-slip fault. Optical pixel tracking in the image azimuth direction is sensitive to exactly this component.
+Before and after NISAR images for the Azuero-Sona Peninsula showing the amplitude of the radar signal (Image Credit: [Earthquake Insights](https://earthquakeinsights.substack.com/p/surface-rupture-of-the-m77-azuero))
 ```
 
+The result was a **slant-range offset** field showing a crisp boundary between ground moving toward the satellite and ground moving away — the surface rupture trace.
+
+> **What is slant-range offset?** The NISAR satellite looks down at the ground at an angle (the slant), so the quantity measured is the change in distance along that line of sight. Because the fault orientation aligned closely with the satellite's look direction, and because a strike-slip event produces little vertical motion, the slant-range offset was approximately equal to the fault-parallel horizontal displacement projected onto the satellite look direction.
+
+Converting slant-range offset to actual fault slip requires correcting for the viewing geometry. At NISAR's ~45° incidence angle, the relationship simplifies to:
+
+$$
+\text{slip} \approx \sqrt{2} \times \text{slant-range offset}
+$$
+
+Profiles across the rupture measured slant-range offsets of 3.5–4.7 m, corresponding to approximately **5–7 m of surface slip** — consistent with the USGS finite fault model and comparable to the surface slip observed during the 2025 M7.7 Myanmar earthquake on the Sagaing fault.
+
+The Panama dataset also illustrates a subtlety of satellite-based displacement maps: the "before" and "after" images capture a time window, not a single moment. In this case the post-earthquake NISAR pass collected data ~6 hours after the mainshock, meaning a M6.6 aftershock that occurred 2.5 hours after the mainshock was included in the signal. Distinguishing mainshock from aftershock deformation required careful cross-referencing with the aftershock catalogue — a reminder that interpreting pixel-tracking results always requires attention to the temporal baseline of the image pair.
+
+> **Method note:** Panama is a **radar** pixel tracking example, not optical. The physics of sub-pixel correlation are identical, but the input images are radar amplitude rather than reflected sunlight. The technique is the same one used with Sentinel-2 in the laboratory below; the sensor is different. Radar's all-weather, day-night capability makes it particularly valuable for rapid post-earthquake response, when cloud cover or darkness might prevent optical acquisition.
+
 ---
+
 
 # Summary
 
 - **Remote sensing** uses electromagnetic radiation to characterise distant targets. Optical imagery is **passive** — it detects reflected sunlight.
 - The atmosphere is transparent only in certain **spectral windows**; satellite bands are designed to sit within these windows. Ozone, water vapour, and CO₂ define where the windows open and close.
-- Early Landsat satellites used **line-scanning** with a rotating mirror. Modern satellites use **push-broom** linear detector arrays — more reliable and more sensitive.
-- **False-color composites** assign non-visible bands to display colors, revealing features the eye cannot see. **NDVI** exploits the contrast between plant red-absorption and NIR-reflectance to map vegetation and can reveal fault-controlled groundwater anomalies.
-- **Sun-synchronous orbits** ensure consistent illumination across a multi-decade archive, essential for time-series analysis.
+- The human eye is a three-band multispectral sensor. Satellite instruments extend this principle across a much wider spectral range — from coastal blue through to thermal infrared.
+- Early Landsat satellites used **line-scanning** with a rotating mirror. Modern satellites use **push-broom** linear detector arrays — more reliable, more sensitive, and better suited to high resolution.
+- Each spectral band targets a specific atmospheric window and exploits characteristic absorption or reflectance features of surface materials — vegetation, water, minerals, and heat.
+- **False-color composites** assign non-visible bands to display colors, revealing features the eye cannot see. **NDVI** exploits the contrast between plant red-absorption and NIR-reflectance to map vegetation, and can reveal fault-controlled groundwater anomalies.
 - Optical satellites range from Landsat/Sentinel-2 at 10–30 m and free, to WorldView/Pleiades at <1 m and commercial. Planet provides daily coverage at 3–5 m.
-- **Pixel tracking** extends optical imagery to displacement measurement. For NW-trending strike-slip faults, optical azimuth offsets capture fault-parallel motion that InSAR cannot.
+- **Pixel tracking** (sub-pixel correlation) can be applied to both optical and radar amplitude images to measure surface displacement. For strike-slip faults, azimuth offsets capture fault-parallel motion that InSAR cannot. Optical tracking requires clear skies and consistent illumination; radar tracking works day or night through cloud cover.
 
 > In the next lecture we turn to InSAR — a fundamentally different approach that is highly sensitive to vertical and fault-normal motion but blind to the fault-parallel component that optical imagery measures well.
 
@@ -484,6 +583,7 @@ Students will use Sentinel-2 imagery to measure surface deformation associated w
 
 ---
 
+
 # Additional Resources
 
 > **Paper:** Klinger, Y., et al. (2005). High-resolution satellite imagery mapping of the surface rupture and slip distribution of the Mw ~7.8, November 14, 2001 Kokoxili earthquake (Kunlun fault, northern Tibet, China). *BSSA*, 95(5), 1970–1987.
@@ -496,3 +596,6 @@ Students will use Sentinel-2 imagery to measure surface deformation associated w
 
 > **Paper:** Leprince, S., et al. (2007). Automatic and precise orthorectification, coregistration, and subpixel correlation of satellite images, application to ground deformation measurements. *IEEE TGRS*, 45(6), 1529–1558.  
 > The foundational paper for the COSI-Corr pixel-tracking method.
+
+> **Blog post:** Bradley, K. and Hubbard, J. (2026). Surface rupture of the M7.7 Azuero-Sona earthquake revealed by satellite imagery. *Earthquake Insights*. https://earthquakeinsights.substack.com  
+> An accessible, detailed walkthrough of radar pixel offset tracking applied to the 2026 Panama earthquake, including worked examples of slant-range-to-slip conversion and the challenge of separating mainshock from aftershock deformation.
