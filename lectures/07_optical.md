@@ -200,8 +200,8 @@ Since Landsat 1 in 1972, each new instrument has added or refined spectral bands
 
 The key additions across generations:
 
-- **MSS (Landsat 1–5):** Four bands in visible and NIR — the digital equivalent of wartime colour-infrared film. A fifth thermal band flew briefly on Landsat 3 but failed shortly after launch, foreshadowing the thermal capabilities that would come later.
-- **TM (Landsat 4–5):** Expanded to seven bands, adding blue (enabling true-colour imagery for the first time) and two SWIR bands for vegetation and mineral mapping. Resolution improved from 80 m to 30 m.
+- **MSS (Landsat 1–5):** Four bands in visible and NIR — the digital equivalent of wartime color-infrared film. A fifth thermal band flew briefly on Landsat 3 but failed shortly after launch, foreshadowing the thermal capabilities that would come later.
+- **TM (Landsat 4–5):** Expanded to seven bands, adding blue (enabling true-color imagery for the first time) and two SWIR bands for vegetation and mineral mapping. Resolution improved from 80 m to 30 m.
 - **ETM+ (Landsat 7):** Added the 15 m panchromatic band for pansharpening; improved thermal capabilities enabled evapotranspiration estimates from irrigated fields and natural ecosystems.
 - **OLI + TIRS (Landsat 8–9):** Expanded to 11 bands, adding a coastal/aerosol band and a cirrus-detection band; the thermal channel was split into two separate bands for improved atmospheric correction.
 
@@ -215,13 +215,13 @@ The following summarises the physical meaning and primary applications of each b
 
 New on Landsat 8/9, this band extends monitoring into deep blue wavelengths — shorter than the standard blue band. It is used to:
 
-- monitor **ocean colour** and chlorophyll concentrations in coastal and shallow inland waters
+- monitor **ocean color** and chlorophyll concentrations in coastal and shallow inland waters
 - detect **phytoplankton blooms** and assess water quality
 - characterise atmospheric **aerosols** — dust, smoke, and haze — since light at these wavelengths scatters strongly from fine particles
 
 ### Blue (TM Band 1 / OLI Band 2, 0.45–0.52 µm)
 
-The blue band penetrates clear water more effectively than other visible bands, supporting **bathymetric mapping**, reef surveys, and coastal zone monitoring. It also detects subtle differences in chlorophyll absorption and enabled the first natural-colour Landsat images when it was introduced on Landsat 4. A limitation: blue wavelengths scatter strongly in the atmosphere, making this band the most affected by haze.
+The blue band penetrates clear water more effectively than other visible bands, supporting **bathymetric mapping**, reef surveys, and coastal zone monitoring. It also detects subtle differences in chlorophyll absorption and enabled the first natural-color Landsat images when it was introduced on Landsat 4. A limitation: blue wavelengths scatter strongly in the atmosphere, making this band the most affected by haze.
 
 ### Green (TM Band 2 / OLI Band 3, 0.52–0.59 µm)
 
@@ -243,11 +243,11 @@ SWIR bands are absorbed by liquid water in plant leaves, making them sensitive t
 - **Soil mapping**: distinguishing soil types in semi-arid regions.
 - **Wildfire monitoring**: SWIR is less affected by scattering from smoke and dust than visible bands, allowing surface observation through smoke plumes.
 
-> **Geological significance:** The SWIR geology composite (SWIR-2 → red, SWIR-1 → green, Red → blue) exploits these mineral absorption features directly. Hydrothermal alteration zones, clay-rich fault gouges, and iron oxide deposits produce distinctive colours invisible in true-colour imagery — making SWIR bands among the most useful Landsat channels for structural geology and lithological mapping.
+> **Geological significance:** The SWIR geology composite (SWIR-2 → red, SWIR-1 → green, Red → blue) exploits these mineral absorption features directly. Hydrothermal alteration zones, clay-rich fault gouges, and iron oxide deposits produce distinctive colors invisible in true-color imagery — making SWIR bands among the most useful Landsat channels for structural geology and lithological mapping.
 
 ### Panchromatic (ETM+ Band 8 / OLI Band 8, 0.50–0.68 µm)
 
-The panchromatic band spans a broad visible wavelength range at **15 m resolution** — twice the spatial detail of the multispectral bands. It is used primarily for **pansharpening**: combining the high-resolution greyscale panchromatic image with lower-resolution colour multispectral bands to produce a single high-resolution colour image. The panchromatic band is also used for detailed urban mapping and land cover analysis.
+The panchromatic band spans a broad visible wavelength range at **15 m resolution** — twice the spatial detail of the multispectral bands. It is used primarily for **pansharpening**: combining the high-resolution greyscale panchromatic image with lower-resolution color multispectral bands to produce a single high-resolution color image. The panchromatic band is also used for detailed urban mapping and land cover analysis.
 
 ### Cirrus (OLI Band 9, 1.36–1.38 µm)
 
@@ -270,7 +270,7 @@ Landsat 8/9 split the thermal channel into two bands (10.6–11.2 µm and 11.5�
 
 # What the Bands Reveal
 
-## False-Colour Imagery
+## False-Color Imagery
 
 Because our display systems show only red, green, and blue, we assign satellite bands to these three display colors to visualise non-visible information. The choice of which band goes to which display color is called a **band combination** or **composite**. There is no single correct choice — the right combination depends on what you are trying to see.
 
@@ -278,7 +278,7 @@ Note that band numbers are instrument-dependent: NIR is band 4 on Landsat 7, ban
 
 **True color** assigns red→red, green→green, blue→blue. The result looks approximately as your eye would see it from space — intuitive, but limited to what human vision can already detect.
 
-**Colour Infrared (CIR)** assigns NIR→red, red→green, green→blue:
+**Color Infrared (CIR)** assigns NIR→red, red→green, green→blue:
 
 - **Vegetation** appears bright red — plants reflect strongly in NIR while absorbing red for photosynthesis
 - **Water** appears very dark — strong NIR absorption
@@ -519,7 +519,7 @@ The sub-pixel correlation method is not restricted to optical imagery — it app
 | Works in cloud cover? | No | Yes |
 | Works at night? | No | Yes |
 | Affected by illumination angle? | Yes — shadows change between scenes | No |
-| Noise sources | Vegetation change, seasonal colour shifts | Atmospheric moisture, surface change |
+| Noise sources | Vegetation change, seasonal color shifts | Atmospheric moisture, surface change |
 | Output offsets | Azimuth (along-track) + range (cross-track) | Along-track + slant-range |
 
 For a strike-slip fault running roughly parallel to a satellite's flight track, the **azimuth offset** (optical or radar) captures fault-parallel motion. This is the component that InSAR, which measures only line-of-sight phase change, largely misses — making pixel tracking a critical complement to interferometry for horizontal deformation.
@@ -539,6 +539,15 @@ Before and after NISAR images for the Azuero-Sona Peninsula showing the amplitud
 
 The result was a **slant-range offset** field showing a crisp boundary between ground moving toward the satellite and ground moving away — the surface rupture trace.
 
+```{figure} ../figures/07_panama_sro.webp
+---
+name: Panama SRO
+width: 800px
+alt: Slant range offset 2026 Azuero-Sona Earthquake, Panama
+---
+Slant-range offset calculated from the NISAR image pair (2026-09-27 and 2026-10-09) over the M7.7 earthquake area in Panama using pixel offset tracking. Earthquake focal mechanisms from the 2026-10-09 M7.7 sequence are plotted. (Image Credit: Eric Fielding at NASA and [Earthquake Insights](https://earthquakeinsights.substack.com/p/surface-rupture-of-the-m77-azuero))
+```
+
 > **What is slant-range offset?** The NISAR satellite looks down at the ground at an angle (the slant), so the quantity measured is the change in distance along that line of sight. Because the fault orientation aligned closely with the satellite's look direction, and because a strike-slip event produces little vertical motion, the slant-range offset was approximately equal to the fault-parallel horizontal displacement projected onto the satellite look direction.
 
 Converting slant-range offset to actual fault slip requires correcting for the viewing geometry. At NISAR's ~45° incidence angle, the relationship simplifies to:
@@ -547,7 +556,25 @@ $$
 \text{slip} \approx \sqrt{2} \times \text{slant-range offset}
 $$
 
+```{figure} ../figures/07_sro.webp
+---
+name: Slant Range Offset cartoon
+width: 600px
+alt: Slant range offset cartoon diagram for the 2026 Azuero-Sona Earthquake, Panama
+---
+Cartoon illustrating how the slant-range offset relates to horizontal displacement of the ground in the range direction — a simple isosceles right triangle.[Earthquake Insights](https://earthquakeinsights.substack.com/p/surface-rupture-of-the-m77-azuero))
+```
+
 Profiles across the rupture measured slant-range offsets of 3.5–4.7 m, corresponding to approximately **5–7 m of surface slip** — consistent with the USGS finite fault model and comparable to the surface slip observed during the 2025 M7.7 Myanmar earthquake on the Sagaing fault.
+
+```{figure} ../figures/07_panama_crossfault.webp
+---
+name: Slant Range Offset profiles
+width: 800px
+alt: Slant Range Offset profiles for the 2026 Azuero-Sona Earthquake, Panama
+---
+Left: map showing the slant range offset on the Azuero Peninsula. Right: three profiles across the data, crossing the fault. The whisker diagrams show the median, 25th/75th percentiles as a colored box, and the whiskers are the 5th/95th percentiles. We have estimated the total change in slant range offset across the fault in meters, and converted that to slip by multiplying by √2.
+```
 
 The Panama dataset also illustrates a subtlety of satellite-based displacement maps: the "before" and "after" images capture a time window, not a single moment. In this case the post-earthquake NISAR pass collected data ~6 hours after the mainshock, meaning a M6.6 aftershock that occurred 2.5 hours after the mainshock was included in the signal. Distinguishing mainshock from aftershock deformation required careful cross-referencing with the aftershock catalogue — a reminder that interpreting pixel-tracking results always requires attention to the temporal baseline of the image pair.
 
