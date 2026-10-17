@@ -43,7 +43,7 @@ project:
       children:
         - file: lectures/07_optical
         - file: notebooks/07a_optical_false_color
-		- file: notebooks/07b_optical_pixel_tracking
+        - file: notebooks/07b_optical_pixel_tracking
         - file: lectures/08_insar
         - file: notebooks/08_insar
 
