@@ -210,7 +210,7 @@ where $V_s$ is the far-field plate velocity. The ratio inside the arctan is inve
 ```{figure} ../figures/09_profiles.png
 ---
 name: Coseismic and interseismic profiles
-width: 820px
+width: 600px
 alt: Two panels showing fault-perpendicular displacement profiles for coseismic and interseismic cases, each with three locking depths overlaid.
 ---
 Surface displacement profiles for (left) a surface-rupturing coseismic event and (right) the Savage–Burford interseismic model, for locking depths of 5, 10, and 20 km. Deeper locking produces a broader, more gradual profile in both cases.
@@ -235,48 +235,119 @@ $$
 \mathbf{G}_\text{InSAR} \in \mathbb{R}^{N_r \times 2N_p}.
 $$
 
-The factor of 3 in the GNSS rows comes from the three displacement components (east, north, up) per station. The factor of 2 in the columns comes from the two independent slip components (strike-slip and dip-slip) per patch — we do not assume a fixed rake.
+The factor of 3 in the GNSS rows comes from the three displacement components (east, north, up) per station. The factor of 2 in the columns comes from the two independent slip components (strike-slip and dip-slip) per patch — we do not assume a fixed rake, so the inversion recovers both components and the rake emerges as a result.
 
-Each GNSS row block has the form:
+**G is built column by column.** For each patch $k$, we make two `cutde` calls — one for 1 m of strike-slip, one for 1 m of dip-slip — and store the predicted displacements as two columns:
+
+```python
+for k in range(N_p):
+    d_ss = hs.disp_free(obs_pts, tri_k, slip=[1, 0, 0], nu=0.25)
+    d_ds = hs.disp_free(obs_pts, tri_k, slip=[0, 1, 0], nu=0.25)
+    G[:, 2*k]   = d_ss.ravel()   # strike-slip column
+    G[:, 2*k+1] = d_ds.ravel()   # dip-slip column
+```
+
+The GNSS sub-matrix has the explicit index structure:
 
 $$
 \mathbf{G}_\text{GNSS} = 
 \begin{bmatrix}
-G_{E,1,\text{ss}} & G_{E,1,\text{ds}} & G_{E,2,\text{ss}} & \cdots \\
-G_{N,1,\text{ss}} & G_{N,1,\text{ds}} & G_{N,2,\text{ss}} & \cdots \\
-G_{U,1,\text{ss}} & G_{U,1,\text{ds}} & G_{U,2,\text{ss}} & \cdots \\
-G_{E,2,\text{ss}} & G_{E,2,\text{ds}} & \cdots & \\
-\vdots & & & \ddots
+G^E_{1,1,\text{ss}} & G^E_{1,1,\text{ds}} & G^E_{2,1,\text{ss}} & G^E_{2,1,\text{ds}} & \cdots \\
+G^N_{1,1,\text{ss}} & G^N_{1,1,\text{ds}} & G^N_{2,1,\text{ss}} & G^N_{2,1,\text{ds}} & \cdots \\
+G^U_{1,1,\text{ss}} & G^U_{1,1,\text{ds}} & G^U_{2,1,\text{ss}} & G^U_{2,1,\text{ds}} & \cdots \\
+G^E_{1,2,\text{ss}} & G^E_{1,2,\text{ds}} & G^E_{2,2,\text{ss}} & G^E_{2,2,\text{ds}} & \cdots \\
+G^N_{1,2,\text{ss}} & G^N_{1,2,\text{ds}} & G^N_{2,2,\text{ss}} & G^N_{2,2,\text{ds}} & \cdots \\
+G^U_{1,2,\text{ss}} & G^U_{1,2,\text{ds}} & G^U_{2,2,\text{ss}} & G^U_{2,2,\text{ds}} & \cdots \\
+\vdots & & & & \ddots
 \end{bmatrix}
 $$
 
-where $G_{i,k,j}$ is the displacement at station $k$ in direction $i$ due to unit slip on patch in direction $j$.
+where $G^i_{m,k,j}$ is the displacement at station $m$ in component $i \in \{E,N,U\}$ due to 1 m of slip on patch $k$ in direction $j \in \{\text{ss}, \text{ds}\}$.
 
-Each InSAR row is a scalar line-of-sight (LOS) projection:
+Each InSAR row projects the three-component displacement onto the satellite line of sight:
 
 $$
 G^\text{LOS}_{k,j} = \hat{\mathbf{l}} \cdot \mathbf{G}_{\text{GNSS},k,j},
+\qquad
+\hat{\mathbf{l}} = (-\sin\theta\sin\alpha,\; -\sin\theta\cos\alpha,\; \cos\theta),
 $$
 
-where $\hat{\mathbf{l}}$ is the unit LOS vector from ground to satellite, which depends on the satellite look geometry (incidence angle and heading).
-
-> **Note:** The InSAR LOS vector $\hat{\mathbf{l}} = (-\sin\theta\sin\alpha,\, -\sin\theta\cos\alpha,\, \cos\theta)$ where $\theta$ is the incidence angle and $\alpha$ is the satellite heading measured clockwise from north. For Sentinel-1 ascending, $\theta \approx 38°$ and $\alpha \approx -12°$.
+where $\theta$ is the incidence angle and $\alpha$ is the satellite heading clockwise from north. For Sentinel-1 ascending, $\theta \approx 38°$ and $\alpha \approx -12°$. InSAR is most sensitive to vertical and range-parallel motion; it is nearly blind to fault-parallel horizontal motion on a fault aligned with the satellite heading.
 
 ---
 
-## The Size and Cost of G
+## A concrete example
 
-The memory and compute cost of $\mathbf{G}$ scale as:
+Suppose we have $N_s = 3$ GNSS stations and $N_p = 2$ fault patches. Each patch has two slip unknowns (strike-slip $s^\text{ss}$ and dip-slip $s^\text{ds}$), so the slip vector has $2N_p = 4$ entries:
 
 $$
-\text{Memory} = (3N_s + N_r) \times 2N_p \times 8\ \text{bytes}.
+\mathbf{s} = 
+\begin{bmatrix}
+s^\text{ss}_1 \\ s^\text{ds}_1 \\ s^\text{ss}_2 \\ s^\text{ds}_2
+\end{bmatrix}
+\in \mathbb{R}^{4}
 $$
 
-For a practical example: the Cascadia Mccrory mesh has $N_p = 1545$ patches, and we use $N_s = 439$ GNSS stations. The Green's function matrix $\mathbf{G} \in \mathbb{R}^{1317 \times 3090}$ occupies about 33 MB — modest enough to load on a laptop.
+Each station contributes three rows (E, N, U), so the data vector has $3N_s = 9$ entries:
 
-Computing $\mathbf{G}$ requires one `cutde` call per patch (or a vectorized batch). For the Ridgecrest lab mesh (40 patches, 150 stations), this takes a few seconds. For Cascadia (1545 patches, 439 stations), it would take several minutes — which is why the Cascadia $\mathbf{G}$ is pre-computed and distributed.
+$$
+\mathbf{d} = 
+\begin{bmatrix}
+d^E_1 \\ d^N_1 \\ d^U_1 \\
+d^E_2 \\ d^N_2 \\ d^U_2 \\
+d^E_3 \\ d^N_3 \\ d^U_3
+\end{bmatrix}
+\in \mathbb{R}^{9}
+$$
 
-> **Lab reference:** In Parts V and VI of the lab you will build $\mathbf{G}$ for Ridgecrest from scratch, then load the pre-computed Cascadia $\mathbf{G}$. The verification step — confirming that `G @ s_backslip × 1000` reproduces the provided interseismic velocity field to numerical precision — confirms that the units and sign convention are correct before you use $\mathbf{G}$ for anything else.
+The Green's function matrix $\mathbf{G} \in \mathbb{R}^{9 \times 4}$ maps slip to displacement:
+
+$$
+\underbrace{\begin{bmatrix}
+d^E_1 \\ d^N_1 \\ d^U_1 \\
+d^E_2 \\ d^N_2 \\ d^U_2 \\
+d^E_3 \\ d^N_3 \\ d^U_3
+\end{bmatrix}}_{\mathbf{d}}
+=
+\underbrace{\begin{bmatrix}
+G^E_{1,1,\text{ss}} & G^E_{1,1,\text{ds}} & G^E_{1,2,\text{ss}} & G^E_{1,2,\text{ds}} \\
+G^N_{1,1,\text{ss}} & G^N_{1,1,\text{ds}} & G^N_{1,2,\text{ss}} & G^N_{1,2,\text{ds}} \\
+G^U_{1,1,\text{ss}} & G^U_{1,1,\text{ds}} & G^U_{1,2,\text{ss}} & G^U_{1,2,\text{ds}} \\
+G^E_{2,1,\text{ss}} & G^E_{2,1,\text{ds}} & G^E_{2,2,\text{ss}} & G^E_{2,2,\text{ds}} \\
+G^N_{2,1,\text{ss}} & G^N_{2,1,\text{ds}} & G^N_{2,2,\text{ss}} & G^N_{2,2,\text{ds}} \\
+G^U_{2,1,\text{ss}} & G^U_{2,1,\text{ds}} & G^U_{2,2,\text{ss}} & G^U_{2,2,\text{ds}} \\
+G^E_{3,1,\text{ss}} & G^E_{3,1,\text{ds}} & G^E_{3,2,\text{ss}} & G^E_{3,2,\text{ds}} \\
+G^N_{3,1,\text{ss}} & G^N_{3,1,\text{ds}} & G^N_{3,2,\text{ss}} & G^N_{3,2,\text{ds}} \\
+G^U_{3,1,\text{ss}} & G^U_{3,1,\text{ds}} & G^U_{3,2,\text{ss}} & G^U_{3,2,\text{ds}} \\
+\end{bmatrix}}_{\mathbf{G}}
+\underbrace{\begin{bmatrix}
+s^\text{ss}_1 \\ s^\text{ds}_1 \\ s^\text{ss}_2 \\ s^\text{ds}_2
+\end{bmatrix}}_{\mathbf{s}}
+$$
+
+where $G^i_{m,k,j}$ is the displacement at station $m$ in component $i \in \{E,N,U\}$ due to 1 m of slip on patch $k$ in direction $j \in \{\text{ss}, \text{ds}\}$.
+
+Each column of $\mathbf{G}$ is the surface displacement field produced by **1 m of slip on one patch in one direction** — it is a Green's function. Each row of $\mathbf{s}$ is a slip unknown to be estimated. The forward problem is a matrix–vector multiply; the inverse problem recovers $\mathbf{s}$ from $\mathbf{d}$.
+
+> **Check:** For the Cascadia mesh with $N_p = 1545$ patches and $N_s = 439$ stations, what are the dimensions of $\mathbf{G}$? How many slip unknowns are there? Is the system overdetermined or underdetermined?
+
+---
+
+## Size and cost
+
+$$
+\text{Memory} = (3N_s + N_r) \times 2N_p \times 8\text{ bytes}
+$$
+
+| Dataset | $N_s$ or $N_r$ | $N_p$ | $\mathbf{G}$ size |
+|---|---|---|---|
+| Cascadia GNSS only | 439 | 1545 | ~33 MB |
+| + downsampled InSAR (500 px) | 939 | 1545 | ~70 MB |
+| Full InSAR scene (1M px) | 1,000,000 | 1545 | ~70 GB |
+
+This is why InSAR data are **quadtree downsampled** before inversion — retaining spatial resolution near the fault where gradients are steep, and coarsening in the far field where the signal is smooth.
+
+> **Key point:** $\mathbf{G}$ is computed once and reused for all inversions. The elastic structure (half-space, $\nu = 0.25$) is baked in. Changing the regularization, data weights, or slip constraints does not require recomputing $\mathbf{G}$.
 
 ---
 
@@ -305,7 +376,7 @@ The near-vertical geometry means:
 ```{figure} ../figures/09_ridgecrest_forward.png
 ---
 name: Ridgecrest forward model
-width: 840px
+width: 700px
 alt: Two maps showing observed and predicted GNSS coseismic offsets for the Ridgecrest M7.1 earthquake, with fault trace marked.
 ---
 Observed GNSS coseismic offsets (left) and forward model prediction for uniform 1.5 m right-lateral slip (right) for the Ridgecrest M7.1. The forward model captures the far-field pattern but cannot reproduce the spatial variation in offset amplitude near the fault — the motivation for slip inversion.
@@ -333,10 +404,10 @@ The shallow dip of the Cascadia megathrust means:
 - **Broad, smooth signals** at the surface — the shallow dip distributes the elastic deformation over a wide horizontal area.
 - **Strong vertical component** — unlike a near-vertical strike-slip fault, the thrust geometry produces significant vertical surface motion.
 
-```{figure} ../figures/09_cascadia_mesh.png
+```{figure} ../figures/09_mccrory_cfm.png
 ---
-name: Cascadia fault mesh
-width: 720px
+name: Cascadia McCrory fault mesh
+width: 800px
 alt: Map of the Cascadia subduction zone with the Mccrory fault mesh patches coloured by depth, and GNSS stations overlaid.
 ---
 The Mccrory et al. (2012) Cascadia fault mesh: 849 nodes, 1545 triangular patches, depth range 5.5 to 39.3 km. GNSS stations used in the analysis are shown in blue.
@@ -371,13 +442,13 @@ The **hinge line** is the zero-vertical-displacement contour on the surface for 
 
 We quantify this by computing the forward model for uniform slip on all patches shallower than a cutoff depth $D$, and plotting the mean vertical displacement at coastal GNSS stations as a function of $D$.
 
-```{figure} ../figures/09_hinge_line.png
+```{figure} ../figures/09_hinge_line.webp
 ---
 name: Hinge line argument
-width: 900px
-alt: Two panels. Left: vertical displacement profiles perpendicular to the Cascadia coast at 46 degrees N for cutoff depths of 10 to 40 km. Right: mean coastal vertical displacement as a function of cutoff depth, with the 1700 paleoseismic constraint shaded.
+width: 800px
+alt: Hinge Line
 ---
-The hinge line argument for the 1700 Cascadia earthquake. Left: vertical surface displacement at ~46°N for uniform 10 m slip confined to different depth ranges. Right: mean vertical displacement at coastal GNSS stations as a function of downdip slip extent. The paleoseismic constraint (0.5–1.5 m of subsidence, red band) requires that the bulk of slip was shallower than ~30 km — predominantly offshore.
+Signatures of the short-term megathrust cycle in the long-term morphology of the foreland. Schematic representation of a subduction zone in coastal areas where one earth plate slides under the other. The various effects of plate displacement on the overlying landscape are shown. The elastic surface displacement during the interseismic, postseismic and coseismic periods is represented by red curves. Signs of permanent surface deformation imprinted on the landscape by rivers, terraces and shelf breaks are indicated by pink arrows. From [Oryan et al. 2024](https://www.science.org/doi/10.1126/sciadv.adl4286)
 ```
 
 For the Mccrory mesh, the sign change in coastal vertical displacement occurs at approximately **D ≈ 30–33 km**. At 40–47°N the fault reaches this depth roughly 100–150 km offshore. This means the rupture did not extend significantly beneath the coast, consistent with the ghost forest evidence.
@@ -448,32 +519,6 @@ The forward problem — given slip $\mathbf{s}$, compute displacement $\mathbf{d
 | Physical insight needed | Geometry and elastic constants | Also data uncertainty, smoothness assumptions |
 
 The non-uniqueness arises because $\mathbf{G}$ is typically **underdetermined** (fewer observations than slip parameters) and because deep patches produce nearly identical surface signals — the inverse problem cannot distinguish between them without additional constraints.
-
----
-
-## Regularisation
-
-The standard approach to the geodetic slip inversion is **damped least squares** (Tikhonov regularization):
-
-$$
-\hat{\mathbf{s}} = \operatorname*{arg\,min}_{\mathbf{s}} \left\{ \|\mathbf{W}^{1/2}(\mathbf{G}\mathbf{s} - \mathbf{d})\|^2 + \lambda^2 \|\mathbf{L}\mathbf{s}\|^2 \right\},
-$$
-
-where:
-
-- $\mathbf{W}$ is a diagonal data-weighting matrix (inverse of data variance)
-- $\lambda$ is the **regularization parameter** — controls the trade-off between fitting the data and satisfying the smoothness constraint
-- $\mathbf{L}$ is the **regularization operator** — often a Laplacian that penalizes roughness in the slip distribution
-
-The solution is:
-
-$$
-\hat{\mathbf{s}} = (\mathbf{G}^T \mathbf{W} \mathbf{G} + \lambda^2 \mathbf{L}^T \mathbf{L})^{-1} \mathbf{G}^T \mathbf{W} \mathbf{d}.
-$$
-
-Choosing $\lambda$ requires a **trade-off curve** (L-curve or cross-validation): too small and the model is rough and fits noise; too large and the model is oversmoothed and fits poorly.
-
-> **Looking ahead:** In the next two labs you will build this inversion machinery step by step — first designing the regularization operator for the Cascadia mesh, then inverting joint GNSS and InSAR data for a slip distribution. The Green's function matrix you loaded in this lab is the same one that enters the inversion.
 
 ---
 
