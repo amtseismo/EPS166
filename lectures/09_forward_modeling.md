@@ -542,20 +542,20 @@ The non-uniqueness arises because $\mathbf{G}$ is typically **underdetermined** 
 
 # Additional Resources
 
-> **Key Paper:** [Okada (1985) — Surface deformation due to shear and tensile faults](https://doi.org/10.1785/BSSA0750041135)  
+> **Paper:** [Okada (1985) — Surface deformation due to shear and tensile faults](https://doi.org/10.1785/BSSA0750041135)  
 > The original derivation of the analytical solution for a rectangular dislocation in an elastic half-space. The primary reference for geodetic forward modeling for four decades.
 
-> **Key Paper:** [Meade (2007) — Algorithms for triangular dislocation elements](https://doi.org/10.1016/j.cageo.2006.12.003)  
+> **Paper:** [Meade (2007) — Algorithms for triangular dislocation elements](https://doi.org/10.1016/j.cageo.2006.12.003)  
 > Derives the closed-form solution for triangular dislocation elements. The mathematical foundation for `cutde` and all modern mesh-based geodetic inversions.
 
 > **Software:** [cutde library](https://github.com/cutde-org/cutde)  
 > Python implementation of the triangular dislocation element, with a vectorized API suitable for large meshes.
 
-> **Key Paper:** [Satake et al. (2003) — Tsunami source of the 1700 Cascadia earthquake](https://doi.org/10.1029/2003JB002521)  
-> The definitive application of the hinge line argument to constrain the 1700 Cascadia slip distribution from Japanese tsunami records and Pacific Northwest paleoseismic data.
-
 > **Fault Model:** [Mccrory et al. (2012) — Juan de Fuca slab geometry](https://doi.org/10.1029/2012JB009407)  
 > The published fault model used in the Cascadia sections of the lab. The triangulated mesh is distributed with the paper.
+
+> **Fault Models:** [CRESCENT CFM Viewer](https://cfm.cascadiaquakes.org/)  
+> The Cascadia Region Earthquake Science Center (CRESCENT) Community Fault Model Viewer is a community resource for exploring the three-dimensional fault geometries of the Cascadia Subduction Zone and surrounding regions. Filter and inspect faults on the 2D map, then view the selected faults in 3D or download them.
 
 > **Community Resource:** [USGS SLAB2 — Global subduction zone geometries](https://www.sciencebase.gov/catalog/item/5aa1b00ee4b0b1c392e86467)  
 > Depth, dip, and strike grids for all major subduction zones, updated in 2018 (Hayes et al.). A practical starting point for constructing fault meshes for any subduction zone.
