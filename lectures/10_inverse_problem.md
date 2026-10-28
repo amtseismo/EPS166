@@ -1,660 +1,901 @@
-# The Inverse Problem
+# The Inverse Problem: Finding Fault Slip from Surface Observations
 
 ## Purpose
 
-In the forward modeling lecture we established that surface deformation is
-related to fault slip by a linear system:
+Last lecture we established the forward problem: given a slip distribution
+$\mathbf{m}$ and Green's functions $\mathbf{G}$, compute the predicted surface
+displacements $\mathbf{d} = \mathbf{G}\mathbf{m}$. That was a physics calculation —
+it always has a unique, stable answer.
 
-$$\mathbf{d} = \mathbf{G}\mathbf{m}$$
+This lecture runs the problem in reverse. We have measured surface displacements
+from a real earthquake or slow slip event — GPS offsets, InSAR fringes. We want
+to know **where on the fault the slip occurred, and how much**.
 
-Given $\mathbf{m}$ (slip distribution) and $\mathbf{G}$ (Green's functions),
-computing $\mathbf{d}$ (predicted observations) is straightforward. The
-**inverse problem** runs this in reverse: given $\mathbf{d}$ (observations)
-and $\mathbf{G}$ (Green's functions), recover $\mathbf{m}$ (slip distribution).
+That sounds simple. It is not. The same equations that made the forward problem
+easy make the inverse problem genuinely hard, in ways that are both mathematical
+and physical. Understanding those difficulties — and how to deal with them — is
+the whole point of this lecture.
 
-This turns out to be much harder — mathematically, physically, and practically.
+By the end you will be able to:
 
-In this lecture we will:
+- explain why the inverse problem is harder than the forward problem, even when
+  the equations look the same
+- describe what it means for a matrix to be singular or ill-conditioned, and
+  why that matters for fault slip estimation
+- construct the least-squares solution and explain when it fails
+- write down a regularized inversion and explain in plain terms what each piece does
+- use the L-curve to choose how much regularization to apply
+- interpret the resolution matrix to honestly assess what your inversion recovered
 
-- define the inverse problem and contrast it with the forward problem
-- introduce the tomography problem as a concrete, geometric example
-- derive the least-squares solution and understand when it fails
-- show why underdetermined and ill-conditioned systems need regularization
-- introduce data covariance matrices and weighted least squares
-- derive damping and smoothing regularization and their physical meaning
-- introduce the L-curve for choosing the regularization parameter
-- define the resolution matrix and model covariance — the tools for
-  understanding what we can and cannot recover
-
----
-
-# The Forward and Inverse Problems
-
----
-
-## Two Directions Through the Same Equation
-
-$$\mathbf{d} = \mathbf{G}\mathbf{m}$$
-
-| | Forward problem | Inverse problem |
-|---|---|---|
-| **Given** | Model $\mathbf{m}$ | Data $\mathbf{d}$ |
-| **Find** | Predicted data $\mathbf{d}$ | Model parameters $\mathbf{m}$ |
-| **Solution** | Always exists, unique, stable | May not exist; non-unique; unstable |
-| **Method** | Matrix–vector multiply | Requires inversion or optimization |
-
-The forward problem is a physical calculation. The inverse problem is a
-mathematical one — and the three failure modes (non-existence, non-uniqueness,
-instability) are the central challenges we must address.
+You will implement all of this in the upcoming lab.
 
 ---
 
-## A Concrete Example: Block Tomography
+# Part 1 — The Setup: What We Have and What We Want
 
-Before deriving the general theory, let's build intuition with a geometric
-example you can visualize.
+## A Motivating Scenario
 
-Consider a 2D grid of blocks, each with an unknown slowness perturbation
-$s_j$ (fractional change in slowness from a reference model). Seismic rays
-travel from sources to stations along paths that cross multiple blocks.
+Imagine it is July 5, 2019. A Mw 7.1 earthquake has just ruptured a system of
+previously unmapped strike-slip faults near Ridgecrest in the Mojave Desert,
+California — the largest earthquake to hit Southern California in twenty years.
+GNSS receivers across the region have recorded static offsets of up to ~50 cm.
+Sentinel-1 InSAR satellites will image the full deformation field with centimeter
+precision, revealing a complex pattern of conjugate NW- and NE-striking fault
+strands across hundreds of square kilometers of desert.
 
-```{figure} ../figures/11_tomo_setup.png
+You are a geodesist. You have:
+
+- A **data vector** $\mathbf{d}$ — GNSS offsets and InSAR displacements at
+  thousands of sites, all stacked into a single column of numbers.
+- A **Green's function matrix** $\mathbf{G}$ — computed from Okada's solution for
+  your assumed fault geometry. This is the same matrix you built in the forward
+  modeling lecture and lab.
+
+You want to find the slip distribution $\mathbf{m}$ that, when fed into the
+forward model $\mathbf{d} = \mathbf{G}\mathbf{m}$, reproduces the observations.
+Can you just divide both sides by $\mathbf{G}$?
+
+$$\mathbf{m} = \mathbf{G}^{-1}\mathbf{d} \quad \text{???}$$
+
+The answer is almost always no — and understanding *why* not is the core of
+this lecture.
+
 ---
-width: 680px
-alt: A 4×4 grid of slowness blocks with ray paths crossing from sources on one side to stations on the other. Each ray accumulates travel time anomaly proportional to the slowness perturbation in each block it crosses.
----
-A simple 2D tomography problem. Each ray $i$ travels through a set of blocks,
-accumulating travel time anomaly $r_i = \sum_j b_{ij} s_j$ where $b_{ij}$ is
-the path length of ray $i$ through block $j$. The matrix $\mathbf{G}$ (here
-$b_{ij}$) is sparse — most rays pass through only a few of the blocks.
-```
 
-For each ray $i$, the travel time residual is:
-
-$$r_i = \sum_{j=1}^{m} b_{ij} s_j$$
-
-where $b_{ij}$ is the path length of ray $i$ through block $j$ and $s_j$ is
-the slowness perturbation of block $j$. Assembling all rays:
+## Recapping the Equation
 
 $$\underbrace{\mathbf{d}}_{n \times 1} = \underbrace{\mathbf{G}}_{n \times m}
 \underbrace{\mathbf{m}}_{m \times 1}$$
 
-This is **exactly the same equation** as the slip inversion problem — the
-only difference is that here $\mathbf{m}$ contains slowness perturbations
-and $\mathbf{G}$ contains ray path lengths, rather than slip values and
-elastic Green's functions.
+Let's be concrete about what these are:
 
-👉 **The mathematics of tomography and slip inversion are identical.** The
-physical interpretation of $\mathbf{m}$ and $\mathbf{G}$ differs; the
-linear algebra does not.
-
----
-
-## Why the Inverse Problem Is Harder
-
-Three things can go wrong:
-
-**1. The system may be underdetermined ($n < m$):** fewer observations than
-unknowns. No unique solution exists — infinitely many $\mathbf{m}$ fit the
-data equally well. In tomography: too few ray paths to constrain all blocks.
-In slip inversion: too few GNSS stations to resolve all fault patches.
-
-**2. The system may be ill-conditioned:** $\mathbf{G}^T\mathbf{G}$ is nearly
-singular, meaning small changes in $\mathbf{d}$ (noise) cause huge changes
-in $\mathbf{m}$. This happens when some model parameters have nearly the same
-effect on the data — they cannot be distinguished.
-
-**3. The model may be physically unreasonable:** even if a mathematical
-solution exists, it may have negative slip, discontinuous patches, or other
-features that are geologically implausible.
-
-All three problems are addressed by **regularization** — adding constraints
-that encode our prior knowledge about what a reasonable model looks like.
+- $\mathbf{d}$ is the **data vector** — all your displacement measurements
+  stacked into one long column. If you have 150 GNSS stations each measuring
+  east, north, and vertical displacement, then $n = 450$.
+- $\mathbf{m}$ is the **model vector** — the slip on every fault patch, stacked
+  into one long column. If you discretize the fault into 300 patches each with
+  two slip components (strike-slip and dip-slip), then $m = 600$.
+- $\mathbf{G}$ is the **Green's function matrix**, which is $n \times m$: one row
+  per observation, one column per slip parameter. Entry $G_{ij}$ answers: if
+  patch $j$ slips 1 meter, how much does observation $i$ move?
 
 ---
 
-# Least Squares
+## Two Things to Notice About the Sizes
+
+In the example above, $n = 450$ observations and $m = 600$ unknowns. There are
+more unknowns than observations. This is the norm in slip inversion and it immediately 
+tells us that no unique solution exists — infinitely
+many slip distributions will reproduce the same surface data.
+
+Even when $n > m$ on paper, the situation is often just as bad in practice,
+because many observations are not independent. InSAR pixels separated by 1 km
+share atmospheric noise. GNSS stations on the same crustal block move together.
+The *effective* number of independent constraints is much smaller than the raw
+count. As Ide (2007) puts it, the effective rank of $\mathbf{G}$ in slip inversion
+is typically "less than the number of parameters," so the problem is underdetermined
+even when it appears overdetermined on paper.
 
 ---
 
-## The Overdetermined Case
+## The Three Things That Can Go Wrong
 
-When we have more observations than unknowns ($n > m$) and the system is
-consistent (no measurement errors), we can in principle solve exactly.
-With noise, no exact solution exists — we instead minimize the squared
-misfit between predicted and observed data.
+**1. Non-uniqueness.** When there are more unknowns than independent constraints,
+infinitely many slip distributions fit the data equally well. The inverse has no
+unique answer. Which one do you report?
 
-**The least-squares objective:**
+**2. Instability.** Even when a unique solution technically exists, it can be
+wildly sensitive to tiny changes in the data. A 1 mm measurement error might
+produce a 500 m error in the recovered slip. This happens — as we will see in
+detail — when two fault patches produce nearly identical surface signals and the
+inversion cannot distinguish between them.
 
-$$\min_{\mathbf{m}} \|\mathbf{G}\mathbf{m} - \mathbf{d}\|^2$$
+**3. Physical implausibility.** Even if a mathematically valid solution exists,
+it might predict negative slip (a thrust fault patch slipping in the wrong
+direction), or adjacent patches alternating between +20 m and −18 m. The linear
+algebra does not know about geology.
 
-Setting the gradient to zero:
+All three problems are addressed the same way: **regularization** — adding
+geological constraints to the inversion that encode what we know fault slip
+distributions should look like.
 
-$$\mathbf{G}^T\mathbf{G}\mathbf{m} = \mathbf{G}^T\mathbf{d}$$
+---
 
-These are the **normal equations**. The least-squares solution is:
+## Why Deep Patches Are the Worst Offenders
+
+Problems (1) and (2) are much worse for deep fault patches than shallow ones.
+
+Recall from last lecture that a patch's surface fingerprint gets broader and
+smoother as depth increases. A patch at 5 km depth produces a sharp, localized
+signal. A patch at 25 km depth produces a broad, diffuse signal that overlaps
+heavily with its neighbors.
+
+When two adjacent deep patches produce nearly identical fingerprints, the
+inversion faces a fundamental problem: any amount of slip can be transferred
+from one patch to the other without changing the predicted surface displacement
+at all. From the surface data's perspective, the two patches are indistinguishable.
+
+```{figure} ../figures/10_singular_G_patch_fingerprints.png
+---
+name: Patches
+width: 800px
+alt: Cross-section showing three fault patches at different depths, alongside their surface displacement fingerprints. The shallow patch produces a sharp localized signal; the two deep patches produce nearly identical broad signals.
+---
+**Figure 1.** Surface displacement fingerprints (columns of **G**) for three fault patches at different depths. The shallow patch A (orange) produces a sharp, localized signal easily identified by the inversion. The two deep patches B and C produce broad, nearly identical signals — their columns in **G** are nearly parallel. When columns of **G** are nearly parallel, **G**ᵀ**G** becomes nearly singular and cannot be safely inverted. The inversion cannot distinguish slip on B from slip on C, so it may assign arbitrarily large and opposite values to both while still fitting the data at the surface.
+```
+
+---
+
+# Part 2 — Least Squares: The Obvious Approach and Why It Fails
+
+## What We Want
+
+We want the slip vector $\mathbf{m}$ such that $\mathbf{G}\mathbf{m}$ is as
+close as possible to our observed data $\mathbf{d}$. The natural measure of
+"close" is the sum of squared differences:
+
+$$\text{misfit} = \|\mathbf{G}\mathbf{m} - \mathbf{d}\|^2
+= \sum_{i=1}^{n} \left(\text{predicted}_i - \text{observed}_i\right)^2$$
+
+We square the differences so that positive and negative gaps do not cancel, and
+so that large gaps are penalized more heavily than small ones. This is the
+**least-squares** criterion — the same one you have seen in curve fitting.
+
+> **Objective function:** The expression being minimized —
+> $\|\mathbf{G}\mathbf{m} - \mathbf{d}\|^2$ — is called the **objective
+> function**. It is a single number that scores how bad a given slip
+> distribution $\mathbf{m}$ is: large when the model fits poorly, zero
+> when it fits perfectly. The point of least squares is to find the
+> $\mathbf{m}$ that makes this number as small as possible.
+
+---
+
+## Deriving the Solution
+
+To minimize $\|\mathbf{G}\mathbf{m} - \mathbf{d}\|^2$, take the derivative with
+respect to $\mathbf{m}$ and set it to zero. This gives the **normal equations**:
+
+$$\mathbf{G}^T\mathbf{G}\,\mathbf{m} = \mathbf{G}^T\mathbf{d}$$
+
+Why "normal"? Because at the minimum, the residual vector
+($\mathbf{d} - \mathbf{G}\mathbf{m}$, the gap between predictions and
+observations) is perpendicular (normal) to the column space of $\mathbf{G}$ —
+the set of all surface displacement patterns the model can possibly produce.
+Geometrically, $\mathbf{G}\mathbf{m}_{LS}$ is the point in the column space
+closest to the observed data $\mathbf{d}$.
+
+Solving the normal equations:
 
 $$\boxed{\mathbf{m}_{LS} = (\mathbf{G}^T\mathbf{G})^{-1}\mathbf{G}^T\mathbf{d}}$$
 
-**Geometric interpretation:** $\mathbf{G}\mathbf{m}_{LS}$ is the orthogonal
-projection of $\mathbf{d}$ onto the column space of $\mathbf{G}$. We find the
-model whose predicted data is as close as possible to the observations, in the
-least-squares sense.
-
-```{figure} ../figures/11_least_squares_geometry.png
----
-width: 550px
-alt: Geometric diagram showing the data vector d, the column space of G as a plane, and the least-squares solution as the orthogonal projection of d onto that plane.
----
-Geometric interpretation of least squares. The data vector $\mathbf{d}$
-(red) lives in $n$-dimensional data space. The column space of $\mathbf{G}$
-(gray plane) contains all vectors that can be predicted by the model. The
-least-squares solution $\mathbf{G}\mathbf{m}_{LS}$ (blue) is the orthogonal
-projection of $\mathbf{d}$ onto this subspace. The residual vector
-$\mathbf{d} - \mathbf{G}\mathbf{m}_{LS}$ (dashed) is perpendicular to the
-column space.
-```
-
 ---
 
-## The Underdetermined Case: Minimum Norm
+## What Does "Singular" Mean, and Why Does It Matter?
 
-When $n < m$, the system has infinitely many solutions. Among all solutions
-that fit the data exactly, the one with the **smallest norm** (shortest vector
-in model space) is:
+The least-squares formula requires inverting the matrix $\mathbf{G}^T\mathbf{G}$.
+But not all matrices can be inverted.
 
-$$\mathbf{m}_{MN} = \mathbf{G}^T(\mathbf{G}\mathbf{G}^T)^{-1}\mathbf{d}$$
+**A matrix is singular if it cannot be inverted.** By analogy: $1/x$ is undefined
+when $x = 0$, because no number times zero gives you back 1. A singular matrix
+is the multi-dimensional equivalent — it collapses some directions in space to
+zero, and you cannot undo that. If $\mathbf{G}^T\mathbf{G}$ is singular, the
+formula $(\mathbf{G}^T\mathbf{G})^{-1}$ does not exist, and the solution blows up.
 
-This is the **minimum norm solution**. While mathematically clean, it is
-often physically wrong — for slip inversion it spreads the slip as broadly
-as possible across all fault patches, rather than concentrating it where the
-data actually demands it.
+**A matrix is ill-conditioned** (i.e. nearly singular) if it can
+technically be inverted, but the result is not meaningful. Near-singular
+matrices act like dividing by a very small number — a tiny change in the input
+produces an enormous change in the output. If $\mathbf{G}^T\mathbf{G}$ is nearly
+singular, a 1 mm error in your GPS measurement can become a 1000 m error in your
+recovered slip. The inversion magnifies noise instead of filtering it.
 
-> **Question:** The minimum norm solution minimizes $\|\mathbf{m}\|^2$.
-> For slip inversion, this means minimizing the total slip magnitude across
-> all patches. Is this a good physical prior? What would a more geologically
-> reasonable prior look like?
+This happens in fault inversion whenever two columns of $\mathbf{G}$ are nearly
+identical — that is, whenever two patches produce nearly the same surface signal.
+The matrix $\mathbf{G}^T\mathbf{G}$ becomes nearly singular, and inverting it is
+numerically meaningless.
+
+> **Example:** Suppose patches B and C each produce 2 mm of northward
+> displacement at every station. The inversion can assign +1000 m to B and −999 m
+> to C and get almost exactly the same predicted data as assigning 0.5 m to each.
+> Both solutions fit the data equally well. The mathematics picks one of them, but
+> the result is not physical.
 
 ---
 
-# Data Covariance and Weighted Least Squares
+## The Underdetermined Case: Infinitely Many Solutions
+
+When there are more unknowns than independent constraints, there are infinitely
+many slip vectors that exactly satisfy $\mathbf{G}\mathbf{m} = \mathbf{d}$.
+
+The mathematical reason is that **G** has a **null space** — a set of slip
+patterns that produce zero surface displacement. These are not physically
+desired; they arise because some combinations of slip on different patches
+cancel each other's surface signals perfectly. If $\mathbf{m}_0$ is one
+solution that fits the data, then $\mathbf{m}_0 + \mathbf{n}$ also fits
+the data exactly for any null space vector $\mathbf{n}$, because adding
+$\mathbf{n}$ changes the predicted displacements by exactly zero. The
+inversion has no way to distinguish between these solutions, giving
+infinitely many equally valid answers. Deep patches whose broad, overlapping
+signals nearly cancel each other are close to null space vectors — which is
+why deep slip is always the hardest to resolve.
+
+One approach — the **minimum norm solution** — picks the solution with the smallest
+total slip. But "smallest total slip" is not the right criterion for fault slip. Real
+earthquakes concentrate slip in asperities. The minimum norm solution smears a
+little slip uniformly across every patch — mathematically clean but geologically
+wrong.
+
+> **The bottom line:** Plain least squares fails for fault inversion. The matrix
+> is singular or nearly singular, noise gets amplified catastrophically, and even
+> when a solution exists it has the wrong physical character. We need to add
+> information from outside the data.
 
 ---
 
-## Not All Data Are Equal
+# Part 3 — Regularization: Adding What the Data Cannot Provide
 
-The simple least-squares solution treats all observations as equally reliable.
-In practice:
+## The Core Idea
 
-- GNSS vertical offsets have larger uncertainties than horizontal offsets
-- Near-fault GNSS stations have larger signal-to-noise than far-field stations  
-- InSAR pixels in urban areas are more coherent than those over vegetation
-- Different datasets (GNSS, InSAR, HR-GNSS) have fundamentally different error
-  characteristics
+Since the data alone cannot pin down a unique, stable, physically reasonable slip
+distribution, we need to bring in external information. That information comes from
+geology: we know things about what a fault slip distribution should look like even
+before looking at a single GPS measurement.
 
-The **data covariance matrix** $\mathbf{C}_d$ encodes these uncertainties:
+**Regularization** formalizes this. We add a **penalty term** to the objective
+function that scores how geologically unreasonable a given slip distribution is.
+The inversion then minimizes the combined score: fit the data well, but not at
+the cost of a geologically absurd model.
 
-$$C_d^{ij} = \text{cov}(d_i, d_j) = \begin{cases}
-\sigma_i^2 & i = j \quad \text{(variance of observation } i\text{)} \\
-\rho_{ij}\sigma_i\sigma_j & i \neq j \quad \text{(covariance between observations)}
-\end{cases}$$
+The structure is:
 
-For uncorrelated data with known uncertainties $\sigma_i$, $\mathbf{C}_d$
-is diagonal:
+$$\min_{\mathbf{m}} \underbrace{\|\mathbf{G}\mathbf{m} - \mathbf{d}\|^2}_{\text{data misfit}}
++ \underbrace{\lambda^2 \cdot \text{penalty}(\mathbf{m})}_{\text{geological penalty}}$$
 
-$$\mathbf{C}_d = \begin{pmatrix} \sigma_1^2 & & \\ & \ddots & \\ & & \sigma_n^2 \end{pmatrix}$$
+The parameter $\lambda$ (lambda) is a dial that controls the balance:
 
----
+- **Large $\lambda$:** the geological penalty dominates. The solution looks
+  physically reasonable but may not fit the data very well.
+- **Small $\lambda$:** the data misfit dominates. The solution fits the data
+  closely but may be noisy and unrealistic.
+- **Goal:** find a $\lambda$ where the solution fits the data to within its noise
+  level and looks geologically plausible.
 
-## Weighted Least Squares
-
-Observations with smaller variance should count more. The **weighted least
-squares** objective down-weights uncertain observations:
-
-$$\min_{\mathbf{m}} (\mathbf{G}\mathbf{m} - \mathbf{d})^T \mathbf{C}_d^{-1}
-(\mathbf{G}\mathbf{m} - \mathbf{d})$$
-
-The solution is:
-
-$$\boxed{\mathbf{m}_{WLS} = (\mathbf{G}^T\mathbf{C}_d^{-1}\mathbf{G})^{-1}
-\mathbf{G}^T\mathbf{C}_d^{-1}\mathbf{d}}$$
-
-For diagonal $\mathbf{C}_d$ this is equivalent to dividing each equation by
-$\sigma_i$ before solving — a data with smaller uncertainty receives more weight.
+How to choose $\lambda$ is covered in Part 5. First, two choices of penalty.
 
 ---
 
-## The InSAR Covariance Structure
+## Damping: "Prefer Small Slip"
 
-InSAR data is spatially correlated — adjacent pixels share atmospheric noise
-and orbital errors, so their residuals are not independent. The off-diagonal
-terms of $\mathbf{C}_d$ are non-negligible.
+The simplest penalty is on the **total size** of the slip vector:
 
-A common model for InSAR spatial covariance is an exponential decay:
+$$\text{penalty} = \|\mathbf{m}\|^2 = m_1^2 + m_2^2 + \cdots + m_M^2$$
 
-$$C_d^{ij} = \sigma^2 \exp\!\left(-\frac{d_{ij}}{L}\right)$$
+Among all distributions that fit the data reasonably, prefer the one with the
+smallest total slip. The combined objective is:
 
-where $d_{ij}$ is the distance between pixels $i$ and $j$ and $L$ is the
-correlation length (typically 10–50 km for atmospheric noise).
+$$\min_{\mathbf{m}} \|\mathbf{G}\mathbf{m} - \mathbf{d}\|^2 + \lambda^2\|\mathbf{m}\|^2$$
 
-```{figure} ../figures/11_insar_covariance.png
----
-width: 650px
-alt: A variogram showing the variance of InSAR phase as a function of pixel separation, with the fitted exponential covariance model.
----
-InSAR covariance structure estimated from an earthquake interferogram. The
-variance (semi-variogram) increases with pixel separation and saturates at
-the spatially uncorrelated noise level $\sigma^2$. The correlation length $L$
-is estimated from the slope at the origin. This structure must be accounted
-for to avoid overweighting the dense InSAR data relative to the sparse GNSS.
-```
-
-👉 Ignoring InSAR covariance structure typically **overweights the InSAR data**
-relative to GNSS — the millions of InSAR pixels are not millions of independent
-observations; their effective number of independent data points is much smaller.
-
----
-
-## Combining Multiple Datasets
-
-When combining GNSS, InSAR ascending, and InSAR descending data, the combined
-data vector and covariance matrix are block-diagonal:
-
-$$\mathbf{d} = \begin{pmatrix}\mathbf{d}_{GNSS}\\ \mathbf{d}_{InSAR,asc}\\ \mathbf{d}_{InSAR,dsc}\end{pmatrix}, \quad
-\mathbf{C}_d = \begin{pmatrix}\mathbf{C}_{GNSS} & & \\ & \mathbf{C}_{asc} & \\ & & \mathbf{C}_{dsc}\end{pmatrix}$$
-
-The relative weighting between datasets is controlled by the ratio of their
-noise levels — not by the number of observations. This is why careful
-estimation of $\mathbf{C}_d$ is as important as the inversion itself.
-
----
-
-# Regularization
-
----
-
-## Why We Need It
-
-Even with carefully weighted data, $\mathbf{G}^T\mathbf{C}_d^{-1}\mathbf{G}$
-is typically singular or nearly singular for the slip inversion problem.
-This happens because:
-
-- the fault has more patches than independent data constraints
-- deep patches produce broad surface signals that look similar to each other
-- the data coverage is spatially uneven
-
-Attempting to invert a nearly singular matrix amplifies noise catastrophically.
-We need to add information.
-
-**Regularization** adds a penalty term to the objective function that
-encodes our prior expectation about what a reasonable model looks like.
-The two most common forms are damping and smoothing.
-
----
-
-## Damping (Tikhonov Regularization)
-
-**Damping** penalizes the size of the model — it says "prefer small slip values."
-
-The augmented system:
+This can be rewritten as an augmented least-squares system by stacking extra
+equations below the original:
 
 $$\begin{bmatrix}\mathbf{G}\\ \lambda\mathbf{I}\end{bmatrix}\mathbf{m}
 = \begin{bmatrix}\mathbf{d}\\ \mathbf{0}\end{bmatrix}$$
 
-This minimizes the objective:
-
-$$\|\mathbf{G}\mathbf{m} - \mathbf{d}\|^2 + \lambda^2\|\mathbf{m}\|^2$$
-
-The solution:
+The bottom block says: try to make $\lambda \cdot \mathbf{m} \approx \mathbf{0}$
+— keep the slip small. The solution is:
 
 $$\mathbf{m}_{damp} = (\mathbf{G}^T\mathbf{G} + \lambda^2\mathbf{I})^{-1}
 \mathbf{G}^T\mathbf{d}$$
 
-The regularization parameter $\lambda$ controls the trade-off: large $\lambda$
-forces the model toward zero (small slip everywhere); small $\lambda$ lets
-the data drive the solution.
+Notice what adding $\lambda^2\mathbf{I}$ does: it adds a positive number to every
+diagonal entry of $\mathbf{G}^T\mathbf{G}$. This prevents any direction from
+collapsing to zero. Even if $\mathbf{G}^T\mathbf{G}$ was singular, the sum
+$\mathbf{G}^T\mathbf{G} + \lambda^2\mathbf{I}$ is always invertible for $\lambda > 0$.
+**Regularization literally fixes the singularity problem.**
 
-**Physical meaning:** damping is appropriate when we expect the true slip
-to be small and concentrated. It stabilizes the inversion by pulling
-unreasonably large slip values back toward zero.
-
-**Limitation:** damping does not prevent spatially rough solutions —
-adjacent patches can have wildly different slip values even with heavy damping.
+**When is damping appropriate?** When you expect slip to be genuinely small —
+slow slip events with centimeter-scale motion. For large earthquakes with meter-scale
+slip, damping is the wrong geological expectation and will underestimate the slip.
 
 ---
 
-## Smoothing (Laplacian Regularization)
+## Smoothing: "Prefer Spatially Coherent Slip"
 
-**Smoothing** penalizes the roughness of the model — it says "prefer spatially
-smooth slip distributions."
+For most coseismic earthquakes, the better geological expectation is not that
+slip is small, but that it varies **smoothly** across the fault. Adjacent patches
+tend to have similar slip — real fault slip does not jump erratically from one
+subfault to the next.
 
-The penalty term uses the **finite difference Laplacian** $\mathbf{L}$:
+**Smoothing regularization** penalizes abrupt changes between neighboring patches:
 
-$$\nabla^2 m_j \approx 0.25(m_{left} + m_{right} + m_{up} + m_{down}) - m_j$$
+$$\text{penalty} = \|\mathbf{L}\mathbf{m}\|^2$$
+
+where $\mathbf{L}$ is the **Laplacian smoothing matrix**. Here is what it does.
+
+The second derivative of a function at a point measures how much that point
+differs from its neighbors. For slip values on a 1D row of patches:
+
+$$\text{second derivative at patch } j \approx m_{j-1} - 2m_j + m_{j+1}$$
+
+If this is large in magnitude, the slip is curving sharply at patch $j$ — it is
+rough. If this is near zero, the slip is varying smoothly there. The matrix
+$\mathbf{L}$ computes this second derivative at every patch simultaneously.
+One row of $\mathbf{L}$ looks like:
+
+$$[\mathbf{L}]_j = \begin{pmatrix} \cdots & 1 & -2 & 1 & \cdots \end{pmatrix}$$
+
+(with $-2$ in column $j$, and $1$ in the columns for patch $j$'s neighbors).
+Penalizing $\|\mathbf{L}\mathbf{m}\|^2$ means penalizing the squared second
+derivative across the fault. The inversion is discouraged from producing sharp
+kinks or checkerboard patterns in the slip.
 
 The augmented system:
 
 $$\begin{bmatrix}\mathbf{G}\\ \lambda\mathbf{L}\end{bmatrix}\mathbf{m}
 = \begin{bmatrix}\mathbf{d}\\ \mathbf{0}\end{bmatrix}$$
 
-This minimizes:
-
-$$\|\mathbf{G}\mathbf{m} - \mathbf{d}\|^2 + \lambda^2\|\mathbf{L}\mathbf{m}\|^2$$
-
-The solution:
+The bottom block says: try to make $\lambda \cdot \mathbf{L}\mathbf{m} \approx \mathbf{0}$
+— keep the slip smooth. The solution is:
 
 $$\mathbf{m}_{smooth} = (\mathbf{G}^T\mathbf{G} + \lambda^2\mathbf{L}^T\mathbf{L})^{-1}
 \mathbf{G}^T\mathbf{d}$$
 
-```{figure} ../figures/11_damping_vs_smoothing.png
+```{figure} ../figures/10_damping_vs_smoothing.png
 ---
-width: 720px
-alt: Two inverted slip distributions for the same synthetic data — one using damping (left) showing noisy, small-amplitude patches, and one using smoothing (right) showing a coherent, spatially smooth asperity.
+name: fig-damping-vs-smoothing
+width: 800px
+alt: Six-panel figure. Top row: slip maps for the true slip distribution, the damped inversion, and the smoothed inversion. Bottom row: predicted vs observed displacements at each station for each model, with RMS misfit labelled.
 ---
-Damping vs. smoothing regularization for a synthetic slip inversion. **Left:**
-damped solution — slip is small everywhere but can still be spatially rough.
-**Right:** smoothed solution — the spatial pattern is physically coherent and
-the asperity is clearly recovered, at the cost of slightly blurring its edges.
-For most slip inversions, smoothing is preferred because it produces
-geologically interpretable results.
+Top row: Slip distributions recovered by each approach on the same synthetic fault, compared to the true slip (left). The damped inversion (centre) amplifies noise into large, oscillating values with unphysical back-slip (blue) — the size penalty suppresses amplitude but imposes no spatial structure. The smoothed inversion (right) recovers a coherent asperity in the correct location, though blurred relative to the truth. Bottom row: observed displacements (black dots) and model predictions (coloured line) at each station, sorted by along-strike position. The damped model achieves a lower RMS misfit (1.39 vs 1.76) by fitting noise as well as signal — its jagged predicted line tracks individual data outliers. The smoothed model fits the broad pattern of the data without chasing every wiggle. This is the central trade-off of regularization: a better data fit does not mean a better slip model.
 ```
 
-**Physical meaning:** smoothing is the more geologically appropriate prior
-for slip inversion — real fault slip distributions are spatially coherent,
-not random patch by patch.
-
-**Limitation:** heavy smoothing blurs sharp features. An asperity much
-smaller than the spatial resolution of the data will be smeared over a
-larger area.
-
 ---
 
-## Damping vs. Smoothing: When to Use Each
+## Comparing the Two
 
 | | Damping | Smoothing |
 |---|---|---|
-| **Penalty** | $\|\mathbf{m}\|^2$ — size of model | $\|\mathbf{L}\mathbf{m}\|^2$ — roughness |
-| **Preferred when** | Slip expected to be small, localized | Slip expected to be spatially coherent |
-| **Risk** | Can produce rough, patchy solutions | Can blur real sharp features |
-| **Typical use** | SSEs (small, distributed slip) | Coseismic earthquakes |
-| **Physical prior** | "Prefer small slip" | "Prefer smooth slip" |
-
-In practice, both are often used together, with separate weights.
+| **Penalty** | $\lambda^2\|\mathbf{m}\|^2$ — total slip size | $\lambda^2\|\mathbf{L}\mathbf{m}\|^2$ — slip roughness |
+| **Geological expectation** | Slip is small | Slip varies smoothly |
+| **Best for** | Slow slip events | Coseismic earthquakes |
+| **Risk** | Underestimates large, concentrated asperities | Blurs sharp slip boundaries |
 
 ---
 
-# The L-Curve
+## The Non-Negativity Constraint
+
+One more constraint is almost always imposed: **slip must be non-negative** —
+it must be in the physically expected direction. A thrust patch should slip
+upward (or not at all). A right-lateral strike-slip patch should slip rightward.
+Negative slip (back-slip) during a coseismic rupture is physically unreasonable.
+
+Without this constraint, the inversion often assigns large negative slip to patches
+to cancel their neighbors' signals, fitting the data with an absurd model. The
+constraint is added as:
+
+$$\min_{\mathbf{m} \geq \mathbf{0}} \|\mathbf{G}\mathbf{m} - \mathbf{d}\|^2
++ \lambda^2\|\mathbf{L}\mathbf{m}\|^2$$
+
+The "$\mathbf{m} \geq \mathbf{0}$" means every entry must be zero or positive.
+This is called **non-negative least squares (NNLS)**, implemented in Python as
+`scipy.optimize.nnls` or `scipy.optimize.lsq_linear` with explicit bounds.
 
 ---
 
-## Choosing the Regularization Parameter
+# Part 4 — Choosing the Regularization Parameter
 
-The regularization parameter $\lambda$ controls the trade-off between:
-- **Data misfit:** $\|\mathbf{G}\mathbf{m} - \mathbf{d}\|^2$ (how well we
-  fit the observations)
-- **Model norm or roughness:** $\|\mathbf{m}\|^2$ or $\|\mathbf{L}\mathbf{m}\|^2$
-  (how geologically reasonable the solution is)
+## The Central Trade-Off
 
-How do we choose $\lambda$? Too small → noisy, over-fitted model. Too large
-→ over-smoothed, under-fitted model.
+The regularization parameter $\lambda$ controls a genuine tension. Think of it
+as a dial with two extremes:
 
-The **L-curve** plots model norm (or roughness) vs. data misfit as $\lambda$
-varies:
+**Too small $\lambda$:** the data misfit term dominates. The inversion will fit
+every data point as closely as possible — but GPS measurements contain noise, so
+the inversion will also fit the noise. The recovered slip will show high-frequency
+oscillations that reflect measurement errors, not real fault slip. The model
+explains the data too well.
 
-```{figure} ../figures/11_L_curve.png
+**Too large $\lambda$:** the smoothing penalty dominates. The solution becomes
+an unrealistically featureless blob — all patches slip about the same amount
+regardless of what the data say. The model fits the data poorly.
+
+**The right $\lambda$** lives between these extremes: the solution fits the data
+to within the noise level (no better, no worse) and looks geologically plausible.
+Finding it requires systematically exploring a range of $\lambda$ values.
+
 ---
-width: 600px
-alt: An L-shaped curve plotting model roughness on the vertical axis against data misfit on the horizontal axis, with the optimal lambda at the corner of the L.
+
+## The L-Curve
+
+The **L-curve** is the standard tool. Here is how to construct one:
+
+1. Run the inversion for many values of $\lambda$, from very small to very large.
+2. For each solution, compute two quantities:
+   - the **data misfit** — how poorly the model fits the observations:
+     $$\|\mathbf{G}\mathbf{m} - \mathbf{d}\|^2 = \sum_{i=1}^{n}(\mathbf{G}_i\mathbf{m} - d_i)^2$$
+   - the **model roughness** — how spatially variable the slip distribution is:
+     $$\|\mathbf{L}\mathbf{m}\|^2 = \sum_{j=1}^{M}(\mathbf{L}_j\mathbf{m})^2$$
+     where $\mathbf{L}_j\mathbf{m}$ is the discrete second derivative of slip
+     at patch $j$ — large when adjacent patches differ strongly, near zero
+     when slip varies smoothly.
+3. Plot roughness on the vertical axis and misfit on the horizontal axis. Each
+   value of $\lambda$ gives one point.
+
+The resulting curve is L-shaped:
+
+```{figure} ../figures/10_slip_lcurve.png
 ---
-The L-curve. Each point on the curve corresponds to a different value of $\lambda$.
-The upper-left region (large $\lambda$) gives smooth models with poor data fit.
-The lower-right region (small $\lambda$) gives rough models with excellent data fit
-but amplified noise. The optimal $\lambda$ is at the **corner** of the L — the
-point of maximum curvature, which balances fit and smoothness. After Hansen (1992).
+name: fig-l-curve
+width: 950px
+alt: Seven-panel figure. Left column: L-curve in log-log space with three
+  labelled points marking under-regularized, optimal, and over-regularized
+  solutions. Top row: slip maps for each of the three solutions. Bottom
+  row: predicted vs observed displacements at each station for each
+  solution, with RMS misfit labelled.
+---
+**Top row:** recovered slip distributions for three values of $\lambda$
+on the same synthetic fault. The under-regularized model (red,
+$\lambda = 0.04$) amplifies noise into large-amplitude oscillations with
+unphysical back-slip (blue). The optimal model (green, $\lambda = 0.50$)
+recovers a coherent slip pattern. The over-regularized model (blue,
+$\lambda = 2.54$) is a featureless plateau — the smoothing penalty has
+overwhelmed the data signal entirely. **Middle row:** predicted vs
+observed displacements at each station. The under-regularized model
+achieves the lowest RMS misfit (0.53) by fitting noise as well as signal;
+the optimal model fits the data to within its noise level (0.65); the
+over-regularized model fits poorly (0.82). A lower RMS does not mean a
+better slip model. **Bottom row:** the L-curve plotted on linear (left)
+and log-log (right) scales. The L-shape is geometrically clear on the
+linear scale: a near-vertical arm where roughness drops steeply at low
+misfit, bending into a near-horizontal arm where misfit grows but
+roughness is already near its floor. Log-log is the standard in the
+literature because it gives readable axes on both arms — but it compresses
+the L into a smooth bend. In practice, the goal is to identify the corner
+(the point of maximum curvature), not a literal right angle.
 ```
 
-**The corner of the L** is the point of maximum curvature — where further
-decreasing $\lambda$ produces rapidly increasing roughness with only marginal
-improvement in fit. This is the optimal regularization parameter.
+**Why is it L-shaped?**
 
-> **Note:** the L-curve method is a heuristic, not a guarantee. For well-behaved
-> problems it works well; for strongly underdetermined problems it can be
-> ambiguous. Cross-validation and Bayesian methods provide more rigorous
-> alternatives but require more computation.
+- **Large $\lambda$ (upper left):** the smoothing penalty completely controls the
+  solution, which is flat and featureless. The misfit is large (the model is too
+  smooth to match the data), but the roughness is tiny.
+- **Small $\lambda$ (lower right):** the data fit controls the solution. The
+  model explains every data point including the noise, becoming very rough. The
+  misfit is tiny, but the roughness is large.
+- **At the corner:** the curve bends. Decreasing $\lambda$ beyond the corner
+  produces rapidly increasing roughness for very little improvement in fit. **The corner is the optimal balance.**
 
----
-
-## Practical Note
-
-It is never worth trying to fit the data perfectly, because all data contain
-noise. An over-fitted model ($\lambda$ too small) fits the noise rather than
-the signal, producing slip patches that are artifacts of measurement error
-rather than real fault behavior.
-
-👉 **A good regularization parameter produces a model that explains the data
-to within the level of its estimated uncertainties — not better, not worse.**
+> **Rule of thumb:** A well-regularized solution should fit the data to within
+> roughly its noise level. If residuals are much smaller
+> than measurement uncertainties, you are fitting noise. If they are much larger,
+> you are over-smoothing.
 
 ---
 
-# Resolution and Uncertainty
+# Part 5 — Data Weighting: Not All Observations Are Equal
+
+## The Problem with Equal Weighting
+
+Everything in Part 3 treated all observations as equally reliable. In reality,
+some measurements are much more precise than others. A GNSS station directly
+above the fault recording a 30 cm offset with 2 mm uncertainty carries far more
+information than a distant station recording a 3 mm signal with 5 mm uncertainty.
+Treating them equally is like giving equal credibility to a precision laboratory 
+measurement and a rough field estimate.
+
+In practice:
+
+- GNSS vertical offsets are 2–3× noisier than horizontal offsets (most atmospheric
+  noise is vertical).
+- InSAR coherence varies: bare desert (like Ridgecrest) is excellent; vegetated
+  areas are noisy.
+- InSAR has millions of pixels and GNSS has hundreds of stations. Treating all
+  measurements equally lets InSAR completely dominate — even though those millions
+  of pixels are not millions of independent measurements (adjacent pixels share the
+  same atmospheric noise).
+
+---
+
+## The Data Covariance Matrix
+
+We encode each measurement's reliability in the **data covariance matrix**
+$\mathbf{C}_d$. This is an $n \times n$ matrix. For uncorrelated observations
+with uncertainties $\sigma_i$, it is diagonal:
+
+$$\mathbf{C}_d = \begin{pmatrix} \sigma_1^2 & 0 & \cdots & 0 \\
+0 & \sigma_2^2 & \cdots & 0 \\
+\vdots & & \ddots & \vdots \\
+0 & 0 & \cdots & \sigma_n^2 \end{pmatrix}$$
+
+Think of it as a lookup table: diagonal entry $\sigma_i^2$ is the variance
+(uncertainty squared) of measurement $i$. Large variance = noisy measurement.
+Small variance = precise measurement.
+
+Off-diagonal entries $C_d^{ij}$ capture correlations between measurements — if
+observations $i$ and $j$ share a noise source (e.g., both lie under the same
+patch of atmosphere), they co-vary and $C_d^{ij} \neq 0$. For most GNSS
+applications we assume uncorrelated measurements and use a diagonal $\mathbf{C}_d$.
+For InSAR, correlations between adjacent pixels matter.
+
+> **Where do uncertainties come from?** The $\sigma_i$ values come directly
+> from the GNSS processing software (GAMIT, GIPSY, or Bernese): when you
+> download a processed GNSS time series or coseismic offset solution, the
+> uncertainty is reported alongside the displacement. They reflect a
+> combination of formal receiver noise, atmospheric delay residuals, and
+> monument stability. The vertical component is typically 2–3× larger than
+> horizontal — which is why vertical displacements are often down-weighted
+> or dropped entirely in geodetic inversions.
+
+---
+
+## Weighted Least Squares
+
+With $\mathbf{C}_d$ in hand, we modify the objective function to weight each
+observation by its precision:
+
+$$\min_{\mathbf{m}} \|\mathbf{G}\mathbf{m} - \mathbf{d}\|^2_{\mathbf{C}_d^{-1}}$$
+
+where the subscript $\mathbf{C}_d^{-1}$ on the norm means each residual is
+scaled by the precision of that observation. This is shorthand for:
+
+$$\min_{\mathbf{m}} \sum_{i=1}^{n} \frac{\left(\mathbf{G}_i\mathbf{m} - d_i\right)^2}{\sigma_i^2}$$
+
+where $\mathbf{G}_i$ is the $i$-th row of $\mathbf{G}$ and $d_i$ is the
+$i$-th observation. Each squared residual is divided by the variance of
+that observation — precise measurements (small $\sigma_i$) count more,
+noisy measurements (large $\sigma_i$) count less. When $\mathbf{C}_d =
+\mathbf{I}$ (all observations equally reliable) this reduces to the
+ordinary misfit $\|\mathbf{G}\mathbf{m} - \mathbf{d}\|^2$ from Part 2.
+
+The solution:
+
+$$\boxed{\mathbf{m}_{WLS} = (\mathbf{G}^T\mathbf{C}_d^{-1}\mathbf{G})^{-1}
+\mathbf{G}^T\mathbf{C}_d^{-1}\mathbf{d}}$$
+
+This is identical to the ordinary least-squares formula, with $\mathbf{C}_d^{-1}$
+inserted in both places. The $\mathbf{C}_d^{-1}$ effectively rescales each
+equation by $1/\sigma_i$ before solving.
+
+---
+
+# Part 6 — What Did We Actually Recover?
+
+## The Truth About Regularization
+
+The regularized solution is not the true slip distribution. It is a smoothed,
+blurred version of the true slip. We added the smoothing constraint because
+the data alone could not determine a unique solution — but that constraint also
+changes what we recover. A sharp asperity in the true slip distribution might
+be averaged out by the smoothing and not appear in the recovered model, not
+because it was not there, but because the data coverage was insufficient to
+resolve it against the smoothing constraint.
+
+How do we know how much blurring has occurred? The **resolution matrix** tells us.
+
+---
+
+## Building Intuition Before the Math
+
+Imagine the true slip distribution has a small, sharp asperity on a deep patch
+— say, 10 m of slip concentrated in a 10 km region. The surface signal from this
+asperity is broad and smooth (because the patch is deep), and looks almost
+identical to the signal from spreading the same total slip over a 30 km region.
+
+The inversion sees the broad surface signal and, with smoothing applied, will
+recover a broad, smooth slip distribution on that deep patch — not the sharp
+asperity that is actually there. The recovered slip is the true slip *averaged*
+over the patch and its neighbors. The resolution matrix quantifies exactly how
+wide that averaging kernel is.
 
 ---
 
 ## The Resolution Matrix
 
-After solving the regularized system, it is essential to ask: **what spatial
-scale of slip can we actually resolve?** The answer is encoded in the
-**resolution matrix** $\mathbf{R}$.
+Write the regularized inversion as a single linear operator $\mathbf{M}$ applied
+to the data:
 
-For the smoothed least-squares solution:
+$$\mathbf{m}_{est} = \mathbf{M}\mathbf{d}$$
 
-$$\mathbf{m}_{smooth} = \underbrace{(\mathbf{G}^T\mathbf{C}_d^{-1}\mathbf{G}
-+ \lambda^2\mathbf{L}^T\mathbf{L})^{-1}\mathbf{G}^T\mathbf{C}_d^{-1}}_{\mathbf{M}}\mathbf{d}$$
+Now substitute the true forward model 
+$\mathbf{d} = \mathbf{G}\mathbf{m}_{true} + \boldsymbol{\varepsilon}$ (true model plus noise):
 
-Substituting $\mathbf{d} = \mathbf{G}\mathbf{m}_{true} + \boldsymbol{\epsilon}$:
+$$\mathbf{m}_{est} = \mathbf{M}\mathbf{G}\,\mathbf{m}_{true}
++ \mathbf{M}\boldsymbol{\varepsilon}$$
 
-$$\mathbf{m}_{smooth} = \underbrace{\mathbf{M}\mathbf{G}}_{\mathbf{R}}\mathbf{m}_{true}
-+ \mathbf{M}\boldsymbol{\epsilon}$$
+where we define $\mathbf{R} = \mathbf{M}\mathbf{G}$ as the **resolution matrix**,
+giving:
 
-The **resolution matrix** is:
+$$\mathbf{m}_{est} = \mathbf{R}\,\mathbf{m}_{true} + \mathbf{M}\boldsymbol{\varepsilon}$$
 
-$$\boxed{\mathbf{R} = (\mathbf{G}^T\mathbf{C}_d^{-1}\mathbf{G}
-+ \lambda^2\mathbf{L}^T\mathbf{L})^{-1}\mathbf{G}^T\mathbf{C}_d^{-1}\mathbf{G}}$$
+When $\mathbf{R}$ equals the identity matrix $\mathbf{I}$, resolution is perfect —
+the estimated model equals the true model apart from noise. In practice
+$\mathbf{R} \neq \mathbf{I}$, meaning our estimate for patch $j$ is a weighted
+average of the true slip on patch $j$ and its neighbors. The $j$-th row of
+$\mathbf{R}$ is the **resolution kernel** for patch $j$ — it tells you how wide
+that averaging is.
 
-If $\mathbf{R} = \mathbf{I}$ (identity matrix), the recovered model equals
-the true model perfectly — perfect resolution. In practice $\mathbf{R}
-\neq \mathbf{I}$: the recovered model is a **blurred version** of the
-true model, where the blurring kernel is given by the rows of $\mathbf{R}$.
-
----
-
-## Interpreting the Resolution Matrix
-
-The $j$-th row of $\mathbf{R}$ is the **resolution kernel** for patch $j$ —
-it tells us that what we call "slip on patch $j$" is actually a weighted
-average of the true slip on patches nearby $j$.
+A **compact resolution kernel** (most weight on patch $j$ itself) means patch $j$
+is well-resolved — our estimate closely reflects what was actually there. A
+**broad resolution kernel** (weight spread across many patches) means patch $j$
+is poorly resolved — our estimate is an average over a large area, and we cannot
+distinguish slip concentrated on patch $j$ from slip spread across its neighbors.
 
 ```{figure} ../figures/11_resolution_matrix.png
 ---
+name: fig-resolution-matrix
 width: 720px
-alt: Left panel showing the full resolution matrix as an image with bright diagonal elements; right panel showing two rows of the matrix as maps on the fault surface, illustrating how shallow patches are well resolved while deep patches are smeared.
+alt: Left panel showing the resolution matrix as an image; right panel
+  showing two resolution kernels — one compact for a shallow patch, one
+  broad for a deep patch.
 ---
-**Left:** the resolution matrix $\mathbf{R}$ displayed as an image. A perfect
-diagonal would mean perfect resolution. Off-diagonal elements indicate
-trade-offs between patches. **Right:** two rows of $\mathbf{R}$ plotted as
-resolution kernels on the fault surface. The shallow patch (top) is well
-resolved — the kernel is compact. The deep patch (bottom) is poorly resolved
-— the kernel is broad, meaning its recovered slip is an average over a large
-fault area.
+**Left:** the resolution matrix $\mathbf{R}$ displayed as an image. Each
+row is the resolution kernel for one patch. A perfect diagonal would mean
+perfect resolution everywhere. **Right:** two resolution kernels plotted
+on the fault surface. The shallow patch has a compact kernel — its
+estimate closely reflects the true slip there. The deep patch has a broad
+kernel — its estimate is an average over a large area, meaning we cannot
+resolve fine structure at depth.
 ```
 
-**Key insight:** resolution degrades with depth. Shallow patches, which
-produce sharp surface signals, are well resolved. Deep patches, which
-produce broad smooth signals, are poorly resolved — their slip trades off
-with the slip on neighboring patches.
+---
+
+## Resolution Always Degrades with Depth
+
+This is not a coincidence. Deep patches produce broad surface signals whose
+Green's function columns are nearly parallel. The inversion cannot distinguish
+them. The smoothing regularization makes it worse — it explicitly averages
+neighboring patches. The result is that resolution kernels for deep patches are
+always broader than those for shallow patches, regardless of how good your data
+coverage is.
+
+This has a direct implication for how you interpret results: before claiming a
+feature on a deep patch, check its resolution kernel. If the kernel spans 100 km,
+you have not resolved a 10 km asperity — you have estimated the average slip over
+a 100 km region.
 
 ---
 
-## The Model Covariance Matrix
+## Model Uncertainty: A Separate Question
 
-The resolution matrix tells us about blurring from regularization. The
-**model covariance matrix** $\mathbf{C}_m$ tells us about the uncertainty
-from data noise:
+The resolution matrix tells you about blurring — how much the smoothing smears
+the true slip. But there is a separate question: how much do measurement errors
+in the data propagate into errors in the slip estimate?
 
-$$\mathbf{C}_m = \mathbf{M}\mathbf{C}_d\mathbf{M}^T = 
-(\mathbf{G}^T\mathbf{C}_d^{-1}\mathbf{G} + \lambda^2\mathbf{L}^T\mathbf{L})^{-1}
-\mathbf{G}^T\mathbf{C}_d^{-1}\mathbf{G}
-(\mathbf{G}^T\mathbf{C}_d^{-1}\mathbf{G} + \lambda^2\mathbf{L}^T\mathbf{L})^{-T}$$
+The **model covariance matrix** $\mathbf{C}_m = \mathbf{M}\mathbf{C}_d\mathbf{M}^T$
+answers this. Its diagonal entries give the variance of each slip estimate.
+These two diagnostics measure different things:
 
-The diagonal elements of $\mathbf{C}_m$ give the **variance** of each
-patch slip estimate. The off-diagonal elements give the **covariance**
-(trade-off) between patch slip estimates.
-
-| | Measures | Controlled by |
+| | What it tells you | Gets worse when |
 |---|---|---|
-| $\mathbf{R}$ | Blurring (regularization effect) | $\lambda$, data coverage |
-| $\mathbf{C}_m$ | Uncertainty (noise propagation) | Data noise, $\lambda$ |
+| Resolution matrix $\mathbf{R}$ | How blurred is the solution? | $\lambda$ is large |
+| Model covariance $\mathbf{C}_m$ | How uncertain is the solution? | $\lambda$ is small |
 
-👉 A good solution has both compact resolution kernels (small regularization
-blurring) and small model covariance (small uncertainty). These two goals
-trade off against each other — increasing $\lambda$ shrinks $\mathbf{C}_m$
-but broadens $\mathbf{R}$.
-
----
-
-# Connecting to Slip Inversion
+Increasing $\lambda$ reduces noise sensitivity (smaller $\mathbf{C}_m$ diagonals)
+but increases blurring (broader resolution kernels). The L-curve corner balances
+both.
 
 ---
 
-## Everything Together: The Full System
+# Part 7 — Putting It All Together
 
-For a joint GNSS + InSAR + non-negativity slip inversion with smoothing:
+## The Complete Problem
 
-$$\min_{\mathbf{m} \geq 0}
+For a joint GNSS + InSAR slip inversion with smoothing, data weighting, and
+non-negativity, the full problem is:
+
+$$\min_{\mathbf{m} \geq \mathbf{0}}
 \underbrace{(\mathbf{G}\mathbf{m} - \mathbf{d})^T\mathbf{C}_d^{-1}(\mathbf{G}\mathbf{m} - \mathbf{d})}_{\text{weighted data misfit}}
-+ \underbrace{\lambda^2\|\mathbf{L}\mathbf{m}\|^2}_{\text{smoothing}}$$
++ \underbrace{\lambda^2\|\mathbf{L}\mathbf{m}\|^2}_{\text{smoothing penalty}}$$
 
-subject to $m_j \geq 0$ for all patches (slip cannot be negative for a
-prescribed rake direction).
+Each piece:
 
-The non-negativity constraint is added because we know the direction of slip
-on a fault and we do not want the inversion to recover back-slip as a way
-of fitting noise. This constraint makes the problem slightly nonlinear
-(it becomes a non-negative least squares or quadratic programming problem),
-but efficient algorithms exist.
+- **Weighted data misfit:** fit the observations, trusting precise measurements
+  more than noisy ones. $\mathbf{C}_d^{-1}$ encodes which stations are reliable.
+- **Smoothing penalty:** prefer slip that varies smoothly, as real faults do.
+  $\mathbf{L}$ is the Laplacian that measures roughness.
+- **Non-negativity:** slip must be in the expected direction.
+- **$\lambda$:** chosen by L-curve to balance fit against smoothness.
+
+This is the standard formulation in nearly all published geodetic slip inversions.
 
 ---
 
-## What the Tomography Example Taught Us
+## The Workflow in Plain Steps
 
-The seismic tomography problem and the slip inversion problem share the same
-mathematical structure. From the tomography analogy we learned:
-
-- **Blocks with many crossing rays** → well-resolved (analogous to shallow
-  fault patches with dense near-field GNSS and InSAR coverage)
-- **Blocks with few rays, or rays all in one direction** → poorly resolved
-  (analogous to deep fault patches or areas with sparse data)
-- **The resolution matrix rows** reveal exactly which model parameters are
-  well constrained and which are smeared averages over a large area
-
-```{figure} ../figures/11_tomo_ray_coverage.png
----
-width: 650px
-alt: Two panels showing a tomography model — on the left the ray coverage showing which blocks are crossed by many rays vs. few, and on the right the recovered velocity model showing well-resolved central blocks and poorly resolved corner blocks with few rays.
----
-Ray coverage controls resolution in tomography — and data coverage controls
-resolution in slip inversion. Blocks crossed by many rays at varied angles
-are well resolved; blocks at the edges of the model with few ray paths are
-poorly constrained. The same principle applies to fault patches: shallow
-patches near dense GNSS networks are well resolved; deep patches far from
-the data are not.
 ```
+1. Prepare data
+   ├── Collect GNSS/InSAR records
+   ├── Estimate uncertainties σ_i for each measurement
+   ├── Build C_d (diagonal matrix: σ_i² on diagonal)
+   └── Decide how to handle InSAR overweighting (subsample or weight)
 
----
+2. Build G  
+   ├── Assume fault geometry from aftershocks, surface trace, focal mechanism
+   └── Compute using Okada or cutde for each patch × each station
 
-## Looking Ahead
+3. Build L  
+   ├── Find neighboring fault patches (which ones share a side?)
+   └── Construct Laplacian finite-difference operator
 
-In the next two lectures we will apply this framework to real problems:
+4. Choose λ  
+   ├── Run inversions for a range of λ values
+   └── Find the L-curve corner: fit = noise level, model = geologically plausible
 
-**Lecture 12 — Cascadia SSE slip inversion (GNSS only):**
-A clean first application — one dataset, well-constrained fault geometry,
-spatially smooth slow slip. We will:
-- build the Green's function matrix for the Cascadia subduction interface
-- choose the regularization parameter using the L-curve
-- recover the SSE slip distribution and interpret the resolution matrix
+5. Solve  
+   ├── Stack [G; λL] → assembled_mat
+   ├── Apply data weights
+   └── Solve with NNLS or bounded least squares (scipy.optimize.lsq_linear)
 
-**Lecture 13 — Ridgecrest joint inversion (GNSS + InSAR + HR-GNSS):**
-The full multi-dataset case. We will:
-- combine three datasets with different noise characteristics
-- show how the InSAR constrains the shallow near-fault slip that GNSS misses
-- discuss what HR-GNSS adds beyond the static offset (rupture propagation)
+6. Assess honestly
+   ├── Compute resolution matrix R = MG
+   ├── Plot resolution kernels for deep and shallow patches
+   ├── Check that residuals match your data uncertainties
+   └── State what is well-resolved and what is not
+```
 
 ---
 
 # Summary
 
-- The **inverse problem** $\mathbf{d} = \mathbf{G}\mathbf{m}$ asks for the
-  model $\mathbf{m}$ given data $\mathbf{d}$ and Green's functions $\mathbf{G}$.
-  Unlike the forward problem, the solution may not exist, may not be unique,
-  and is typically unstable with respect to noise.
+- The **inverse problem** asks: given surface displacements $\mathbf{d}$ and
+  Green's functions $\mathbf{G}$, find fault slip $\mathbf{m}$. Unlike the
+  forward problem, the solution is generally non-unique, unstable, or physically
+  unreasonable.
 
-- The **least-squares solution** $\mathbf{m} = (\mathbf{G}^T\mathbf{G})^{-1}
-  \mathbf{G}^T\mathbf{d}$ minimizes the squared misfit. For underdetermined or
-  ill-conditioned systems it amplifies noise and fails in practice.
+- A matrix is **singular** if it cannot be inverted — the matrix analog of
+  dividing by zero. A matrix is **nearly singular** (ill-conditioned) if small
+  input changes produce huge output changes. $\mathbf{G}^T\mathbf{G}$ is nearly
+  singular whenever two fault patches have nearly identical surface signals, which
+  always happens for deep patches.
 
-- The **data covariance matrix** $\mathbf{C}_d$ encodes measurement uncertainties
-  and correlations. The **weighted least-squares** solution down-weights uncertain
-  observations and properly handles correlated InSAR data.
+- **Regularization** adds a geological penalty term. **Damping** (penalizes slip
+  size, via $\lambda^2\|\mathbf{m}\|^2$) suits slow slip events. **Smoothing**
+  (penalizes slip roughness, via $\lambda^2\|\mathbf{L}\mathbf{m}\|^2$) suits
+  coseismic earthquakes. Both fix the singularity by making the matrix
+  $\mathbf{G}^T\mathbf{G} + \lambda^2(\cdot)$ invertible.
 
-- **Damping** (Tikhonov regularization) adds $\lambda^2\|\mathbf{m}\|^2$ to
-  the objective — it prefers small slip. **Smoothing** adds $\lambda^2\|
-  \mathbf{L}\mathbf{m}\|^2$ — it prefers spatially coherent slip. Both are
-  controlled by the regularization parameter $\lambda$.
+- The **data covariance matrix** $\mathbf{C}_d$ encodes measurement uncertainties.
+  **Weighted least squares** down-weights noisy observations and up-weights precise
+  ones, preventing one noisy dataset from dominating the inversion.
 
-- The **L-curve** plots model roughness vs. data misfit as $\lambda$ varies.
-  The optimal $\lambda$ is at the corner of the L — the point of maximum
-  curvature that balances fit against physical reasonableness.
+- The **regularization parameter $\lambda$** is chosen using the **L-curve**: plot
+  model roughness vs. data misfit for a range of $\lambda$ values, and choose the
+  corner. The optimal solution fits the data to within its noise level.
 
-- The **resolution matrix** $\mathbf{R} = \mathbf{M}\mathbf{G}$ describes
-  how the regularized inversion blurs the true model. A perfect diagonal
-  $\mathbf{R} = \mathbf{I}$ means perfect resolution. In practice, deep
-  patches are poorly resolved and their recovered slip is a smeared average
-  of the true distribution.
+- The **resolution matrix** $\mathbf{R} = \mathbf{M}\mathbf{G}$ measures blurring.
+  A compact resolution kernel means a patch is well-resolved. A broad kernel means
+  the estimate is an average over a large area. Resolution always degrades with depth.
 
-- The **model covariance** $\mathbf{C}_m$ describes how data noise propagates
-  into model uncertainty. Its diagonal elements give the variance of each
-  slip estimate. Resolution and covariance trade off against each other as
-  $\lambda$ is varied.
+- The **Chi-Chi earthquake** shows the resolution principle in action: gross
+  features (well-resolved, data-controlled) agree across all groups; fine details
+  (poorly-resolved, regularization-dependent) do not.
 
-- The seismic tomography problem and the geodetic slip inversion problem are
-  **mathematically identical** — the same equations, the same failure modes,
-  and the same solutions apply to both.
+---
+
+# Key Equations
+
+| Quantity | Expression | Plain meaning |
+|---|---|---|
+| Forward problem | $\mathbf{d} = \mathbf{G}\mathbf{m}$ | Slip → surface displacement |
+| Least squares | $\mathbf{m} = (\mathbf{G}^T\mathbf{G})^{-1}\mathbf{G}^T\mathbf{d}$ | Best fit, no constraints |
+| Weighted LS | $\mathbf{m} = (\mathbf{G}^T\mathbf{C}_d^{-1}\mathbf{G})^{-1}\mathbf{G}^T\mathbf{C}_d^{-1}\mathbf{d}$ | Best fit, weighted by data quality |
+| Damped LS | $\mathbf{m} = (\mathbf{G}^T\mathbf{G} + \lambda^2\mathbf{I})^{-1}\mathbf{G}^T\mathbf{d}$ | Best fit, prefer small slip |
+| Smoothed LS | $\mathbf{m} = (\mathbf{G}^T\mathbf{G} + \lambda^2\mathbf{L}^T\mathbf{L})^{-1}\mathbf{G}^T\mathbf{d}$ | Best fit, prefer smooth slip |
+| Resolution matrix | $\mathbf{R} = \mathbf{M}\mathbf{G}$ | How blurred is the solution? |
 
 ---
 
 # Additional Resources
 
-> **Textbook:** [Geophysical Inverse Theory](https://press.princeton.edu/books/hardcover/9780691036342/geophysical-inverse-theory)  
-> Menke, W. (2018, 2nd ed.). Princeton University Press. The standard graduate reference for inverse theory in geophysics.
+> **Textbook:** Aster, R. C., Borchers, B., & Thurber, C. H. (2019).
+> *Parameter Estimation and Inverse Problems* (3rd ed.). Academic Press.
+> The most accessible graduate-level text; excellent on regularization and the
+> L-curve with worked Python examples. Start here.
 
-> **Textbook:** [Parameter Estimation and Inverse Problems](https://doi.org/10.1016/C2009-0-61134-X)  
-> Aster, R. C., Borchers, B., & Thurber, C. H. (2019, 3rd ed.). Academic Press. More accessible than Menke; excellent on regularization and the L-curve.
+> **Textbook:** Menke, W. (2018). *Geophysical Inverse Theory* (2nd ed.).
+> Princeton University Press. The standard graduate reference.
 
-> **Classic paper:** [Analysis of discrete ill-posed problems by means of the L-curve](https://doi.org/10.1137/1034115)  
-> Hansen, P. C. (1992). *SIAM Review*, 34(4), 561–580. The definitive paper on the L-curve method.
+> **Classic paper:** Hansen, P. C. (1992). Analysis of discrete ill-posed
+> problems by means of the L-curve. *SIAM Review*, 34(4), 561–580.
 
-> **Review:** [Geodetic slip inversions — a review of methods](https://doi.org/10.1146/annurev-earth-053018-060600)  
-> Bürgmann, R. (2018). The interseismic coupling of the Cascadia megathrust. *Annual Review of Earth and Planetary Sciences* — useful context for the next lecture.
+> **Reference for this lecture:** Ide, S. (2007). Slip inversion. In
+> *Treatise on Geophysics*, Vol. 4, pp. 193–223. Elsevier. Sections 4.07.2–4.07.4
+> cover the formulation used here; Section 4.07.4 has the Chi-Chi comparison.
 
-> **Software:** [scipy.optimize.nnls](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.nnls.html)  
-> Non-negative least squares solver used in the inversion lab.
 
 ---
 
-# Sources
+# Appendix — Derivation of the Normal Equations
 
-- Menke, W. (2018). *Geophysical Inverse Theory* (2nd ed.). Princeton University Press.
-- Aster, R. C., Borchers, B., & Thurber, C. H. (2019). *Parameter Estimation and Inverse Problems* (3rd ed.). Academic Press.
-- Hansen, P. C. (1992). Analysis of discrete ill-posed problems by means of the L-curve. *SIAM Review*, 34(4), 561–580. https://doi.org/10.1137/1034115
-- Shearer, P. M. (2019). *Introduction to Seismology* (3rd ed.). Cambridge University Press.
-- Tarantola, A. (2005). *Inverse Problem Theory and Methods for Model Parameter Estimation*. SIAM. https://doi.org/10.1137/1.9780898717921
+## Setup
+
+We want to find the slip vector $\mathbf{m}$ that minimizes the sum of squared
+residuals between predicted and observed displacements:
+
+$$f(\mathbf{m}) = \|\mathbf{G}\mathbf{m} - \mathbf{d}\|^2$$
+
+For any vector $\mathbf{v}$, $\|\mathbf{v}\|^2 = \mathbf{v}^T\mathbf{v}$, so:
+
+$$f(\mathbf{m}) = (\mathbf{G}\mathbf{m} - \mathbf{d})^T(\mathbf{G}\mathbf{m} - \mathbf{d})$$
+
+---
+
+## Step 1 — Expand
+
+Expanding $(a - b)^T(a - b)$ just like $(a-b)^2 = a^2 - 2ab + b^2$:
+
+$$f(\mathbf{m}) = \mathbf{m}^T\mathbf{G}^T\mathbf{G}\mathbf{m}
+- 2\,\mathbf{d}^T\mathbf{G}\mathbf{m}
++ \mathbf{d}^T\mathbf{d}$$
+
+The two cross terms are both scalars and equal
+($\mathbf{d}^T\mathbf{G}\mathbf{m} = \mathbf{m}^T\mathbf{G}^T\mathbf{d}$),
+so they combine into the single $-2$ term above.
+
+---
+
+## Step 2 — Differentiate
+
+Take the gradient $\partial f / \partial \mathbf{m}$ using two rules from matrix calculus:
+
+$$\frac{\partial}{\partial \mathbf{m}}\left(\mathbf{a}^T\mathbf{m}\right) = \mathbf{a}
+\qquad \text{(linear term)}$$
+
+$$\frac{\partial}{\partial \mathbf{m}}\left(\mathbf{m}^T\mathbf{A}\mathbf{m}\right) = 2\mathbf{A}\mathbf{m}
+\qquad \text{(quadratic term, } \mathbf{A} \text{ symmetric)}$$
+
+Applying term by term:
+
+| Term in $f$ | Gradient |
+|---|---|
+| $\mathbf{m}^T\mathbf{G}^T\mathbf{G}\mathbf{m}$ | $2\mathbf{G}^T\mathbf{G}\mathbf{m}$ |
+| $-2\,\mathbf{d}^T\mathbf{G}\mathbf{m}$ | $-2\mathbf{G}^T\mathbf{d}$ |
+| $\mathbf{d}^T\mathbf{d}$ | $\mathbf{0}$ |
+
+$$\frac{\partial f}{\partial \mathbf{m}} = 2\mathbf{G}^T\mathbf{G}\mathbf{m} - 2\mathbf{G}^T\mathbf{d}$$
+
+---
+
+## Step 3 — Set to Zero and Solve
+
+At the minimum, the gradient is zero:
+
+$$2\mathbf{G}^T\mathbf{G}\mathbf{m} - 2\mathbf{G}^T\mathbf{d} = \mathbf{0}$$
+
+$$\boxed{\mathbf{G}^T\mathbf{G}\,\mathbf{m} = \mathbf{G}^T\mathbf{d}}
+\qquad \leftarrow \textbf{ the normal equations}$$
+
+If $\mathbf{G}^T\mathbf{G}$ is invertible, multiply both sides by its inverse:
+
+$$\mathbf{m}_{LS} = (\mathbf{G}^T\mathbf{G})^{-1}\mathbf{G}^T\mathbf{d}$$
+
+> **Why "normal"?** At the minimum, the residual vector
+> $\mathbf{d} - \mathbf{G}\mathbf{m}$ is perpendicular (*normal*) to every
+> column of $\mathbf{G}$. Geometrically, $\mathbf{G}\mathbf{m}_{LS}$ is the
+> orthogonal projection of $\mathbf{d}$ onto the column space of $\mathbf{G}$.
+
+> **Why does this fail?** The formula requires inverting $\mathbf{G}^T\mathbf{G}$.
+> When two columns of $\mathbf{G}$ are nearly identical (two fault patches with
+> nearly identical surface signals), $\mathbf{G}^T\mathbf{G}$ is nearly singular
+> and cannot be safely inverted. Regularization fixes this by adding
+> $\lambda^2\mathbf{I}$ or $\lambda^2\mathbf{L}^T\mathbf{L}$ to the matrix
+> before inverting.
