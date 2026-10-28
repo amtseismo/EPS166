@@ -610,50 +610,75 @@ wide that averaging kernel is.
 
 ## The Resolution Matrix
 
-Write the regularized inversion as a single linear operator $\mathbf{M}$ applied
-to the data:
+**How faithfully can the inversion recover slip on each fault patch?**
 
-$$\mathbf{m}_{est} = \mathbf{M}\mathbf{d}$$
+Write the regularized inversion as $\mathbf{m}_{est}=\mathbf{M}\mathbf{d}$.
+Substituting $\mathbf{d}=\mathbf{G}\mathbf{m}_{true}+\boldsymbol{\varepsilon}$ gives
 
-Now substitute the true forward model 
-$\mathbf{d} = \mathbf{G}\mathbf{m}_{true} + \boldsymbol{\varepsilon}$ (true model plus noise):
+$$
+\mathbf{m}_{est}
+=
+\underbrace{\mathbf{M}\mathbf{G}}_{\mathbf{R}}
+\mathbf{m}_{true}
++
+\mathbf{M}\boldsymbol{\varepsilon}.
+$$
 
-$$\mathbf{m}_{est} = \mathbf{M}\mathbf{G}\,\mathbf{m}_{true}
-+ \mathbf{M}\boldsymbol{\varepsilon}$$
+The **resolution matrix** $\mathbf{R}$ describes how the inversion
+transforms the true slip pattern. The second term describes how data
+noise enters the estimated slip.
 
-where we define $\mathbf{R} = \mathbf{M}\mathbf{G}$ as the **resolution matrix**,
-giving:
+For a single patch $j$,
 
-$$\mathbf{m}_{est} = \mathbf{R}\,\mathbf{m}_{true} + \mathbf{M}\boldsymbol{\varepsilon}$$
+$$
+(m_{est})_j
+=
+\sum_{k=1}^{N} R_{jk}(m_{true})_k
++
+(\mathbf{M}\boldsymbol{\varepsilon})_j.
+$$
 
-When $\mathbf{R}$ equals the identity matrix $\mathbf{I}$, resolution is perfect —
-the estimated model equals the true model apart from noise. In practice
-$\mathbf{R} \neq \mathbf{I}$, meaning our estimate for patch $j$ is a weighted
-average of the true slip on patch $j$ and its neighbors. The $j$-th row of
-$\mathbf{R}$ is the **resolution kernel** for patch $j$ — it tells you how wide
-that averaging is.
+**Row $j$ of $\mathbf{R}$ contains the weights linking true slip across
+the fault to the estimated slip on patch $j$.** Plotting these weights
+on the fault gives its *resolution kernel*.
 
-A **compact resolution kernel** (most weight on patch $j$ itself) means patch $j$
-is well-resolved — our estimate closely reflects what was actually there. A
-**broad resolution kernel** (weight spread across many patches) means patch $j$
-is poorly resolved — our estimate is an average over a large area, and we cannot
-distinguish slip concentrated on patch $j$ from slip spread across its neighbors.
+- **Red:** true slip here contributes positively to the estimate on patch $j$.
+- **Blue:** true slip here contributes negatively.
+- **White:** true slip here has little influence on that estimate.
 
-```{figure} ../figures/11_resolution_matrix.png
+These weights are not probabilities and need not sum to one.
+
+---
+
+## What does good resolution look like?
+
+**Perfect resolution:** $\mathbf{R}=\mathbf{I}$. Each patch has a weight
+of one on itself and zero everywhere else.
+
+**Good resolution:** a kernel concentrated at the target patch, with
+a self-weight near one and little contribution from other patches.
+
+**Poor resolution:** a broad or displaced kernel, potentially with
+negative sidelobes. The estimated slip mixes contributions from
+different parts of the fault and may suppress or distort real features.
+
+> **A smooth recovered slip model does not necessarily mean the true
+> slip was smooth—it may reflect limited resolution.**
+
+```{figure} ../figures/10_resolution_matrix.png
 ---
 name: fig-resolution-matrix
-width: 720px
-alt: Left panel showing the resolution matrix as an image; right panel
-  showing two resolution kernels — one compact for a shallow patch, one
-  broad for a deep patch.
+width: 800px
+alt: Six panels showing true slip, recovered slip, their difference,
+  the resolution matrix, and resolution kernels for shallow and deep patches.
 ---
-**Left:** the resolution matrix $\mathbf{R}$ displayed as an image. Each
-row is the resolution kernel for one patch. A perfect diagonal would mean
-perfect resolution everywhere. **Right:** two resolution kernels plotted
-on the fault surface. The shallow patch has a compact kernel — its
-estimate closely reflects the true slip there. The deep patch has a broad
-kernel — its estimate is an average over a large area, meaning we cannot
-resolve fine structure at depth.
+**Top:** True slip, recovered slip, and their difference illustrate
+the loss or distortion of spatial detail. **Bottom:** The resolution
+matrix and two example row kernels show which parts of the true model
+contribute to each target patch's estimate. Stars mark the target
+patches. A compact kernel centered on its target indicates better
+localization; a broad or displaced kernel indicates mixing across
+the fault. Red and blue show positive and negative weights, respectively.
 ```
 
 ---
