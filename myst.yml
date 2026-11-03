@@ -52,12 +52,10 @@ project:
         - file: lectures/09_forward_modeling
         - file: notebooks/09_forward_modeling_lab
         - file: lectures/10_inverse_problem
-        - file: notebooks/10_inverse_problem_lab
-		
+        
     - title: Week 6 — Slip Inversion
       children:	
-        - file: lectures/11_slow_slip		
-        - file: notebooks/11_sse_inversion  
+        - file: notebooks/10_inverse_problem_lab
 
     - title: Week 7 — Mass Movements
       children:	
