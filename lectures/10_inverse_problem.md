@@ -141,7 +141,7 @@ name: Patches
 width: 800px
 alt: Cross-section showing three fault patches at different depths, alongside their surface displacement fingerprints. The shallow patch produces a sharp localized signal; the two deep patches produce nearly identical broad signals.
 ---
-**Figure 1.** Surface displacement fingerprints (columns of **G**) for three fault patches at different depths. The shallow patch A (orange) produces a sharp, localized signal easily identified by the inversion. The two deep patches B and C produce broad, nearly identical signals — their columns in **G** are nearly parallel. When columns of **G** are nearly parallel, **G**ᵀ**G** becomes nearly singular and cannot be safely inverted. The inversion cannot distinguish slip on B from slip on C, so it may assign arbitrarily large and opposite values to both while still fitting the data at the surface.
+Surface displacement fingerprints (columns of **G**) for three fault patches at different depths. The shallow patch A (orange) produces a sharp, localized signal easily identified by the inversion. The two deep patches B and C produce broad, nearly identical signals — their columns in **G** are nearly parallel. When columns of **G** are nearly parallel, **G**ᵀ**G** becomes nearly singular and cannot be safely inverted. The inversion cannot distinguish slip on B from slip on C, so it may assign arbitrarily large and opposite values to both while still fitting the data at the surface.
 ```
 
 ---
@@ -473,21 +473,86 @@ the L into a smooth bend. In practice, the goal is to identify the corner
 (the point of maximum curvature), not a literal right angle.
 ```
 
-**Why is it L-shaped?**
+---
 
-- **Large $\lambda$ (upper left):** the smoothing penalty completely controls the
-  solution, which is flat and featureless. The misfit is large (the model is too
-  smooth to match the data), but the roughness is tiny.
-- **Small $\lambda$ (lower right):** the data fit controls the solution. The
-  model explains every data point including the noise, becoming very rough. The
-  misfit is tiny, but the roughness is large.
-- **At the corner:** the curve bends. Decreasing $\lambda$ beyond the corner
-  produces rapidly increasing roughness for very little improvement in fit. **The corner is the optimal balance.**
+## Why is it L-shaped?
+
+The shape arises because there are two qualitatively different regimes of what
+the inversion is doing as $\lambda$ varies — not one continuous slider.
+
+**Regime 1 — the vertical arm (large $\lambda$):** The inversion is fitting the
+*signal* — the real, coherent pattern of surface displacement driven by fault
+slip. Each reduction in $\lambda$ buys a large improvement in data fit at a
+moderate cost in roughness. The curve drops steeply because you are making
+genuine progress: each step in $\lambda$ unlocks more signal.
+
+**Regime 2 — the horizontal arm (small $\lambda$):** The signal has already
+been fit. Further reductions in $\lambda$ only let the inversion chase *noise*
+— random, spatially incoherent measurement errors. Fitting random noise is
+geometrically expensive: a spatially random function requires a very rough
+model. So for tiny gains in misfit, roughness explodes upward. The curve goes
+nearly flat because you are paying an enormous roughness price for almost no
+improvement in fit.
+
+**The corner is the transition point between these two regimes** — the last
+good buy before the marginal cost of better data fit becomes prohibitive. That
+is what makes it the optimal $\lambda$.
+
+The two ends describe where you are on the curve, but neither explains the
+shape. The shape comes from the existence of a sharp transition — which only
+happens when noise is present (see below).
 
 > **Rule of thumb:** A well-regularized solution should fit the data to within
-> roughly its noise level. If residuals are much smaller
-> than measurement uncertainties, you are fitting noise. If they are much larger,
-> you are over-smoothing.
+> roughly its noise level. If residuals are much smaller than measurement
+> uncertainties, you are fitting noise. If they are much larger, you are
+> over-smoothing.
+
+---
+
+## Why Noise Creates the L-curve Corner
+
+The L-curve only has a corner when data contain noise.
+
+**Without noise** — there is only Regime 1. Every reduction in $\lambda$ buys
+real signal, all the way to $\lambda = 0$ where the misfit reaches zero. There
+is no transition to a second regime, because there is no noise to fit. The
+roughness-vs-misfit tradeoff is a smooth, monotone curve with no kink.
+
+**With noise** — the noise creates a **floor** in the data misfit. Here is
+why the floor exists: measurement noise is spatially random, and random noise
+*cannot* be reproduced by any physically plausible slip distribution without
+making the model extremely rough. So once the inversion has fit everything that
+can be fit with a smooth model — the signal — the remaining misfit is
+irreducible without a catastrophic penalty in roughness. That irreducible
+minimum is the noise floor: approximately the total variance of the measurement
+errors, $\sum_i \sigma_i^2$.
+
+Once $\lambda$ is small enough that the solution reaches this floor, Regime 2
+begins. Any further reduction in $\lambda$ barely moves the misfit (you are
+already at the floor) but roughness shoots up as the model starts fitting the
+spatial pattern of the noise. The sharp change in the trade-off rate is the
+corner.
+
+**Without noise the floor is at zero; the two regimes merge into one; the
+corner disappears.**
+
+> **The corner marks the $\lambda$ at which the solution first reaches the
+> noise floor** — fitting the data to within its noise level, and no further.
+
+```{figure} ../figures/10_two_lcurve.png
+---
+name: fig-l-curve-noise
+width: 700px
+alt: Two L-curves on the same axes — one for noiseless data showing a
+  smooth continuous curve with no corner, one for noisy data showing a
+  clear L-shaped bend.
+---
+The same inversion run on noiseless data (blue) and noisy data (red,
+$\sigma = 2$ mm). Without noise the curve slopes continuously — no corner.
+With noise a clear bend appears. The corner of the noisy curve is the
+optimal $\lambda$: the solution is fitting the signal without yet fitting
+the noise.
+```
 
 ---
 
