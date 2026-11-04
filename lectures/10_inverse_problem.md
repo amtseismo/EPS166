@@ -480,19 +480,19 @@ the L into a smooth bend. In practice, the goal is to identify the corner
 The shape arises because there are two qualitatively different regimes of what
 the inversion is doing as $\lambda$ varies — not one continuous slider.
 
-**Regime 1 — the vertical arm (large $\lambda$):** The inversion is fitting the
-*signal* — the real, coherent pattern of surface displacement driven by fault
-slip. Each reduction in $\lambda$ buys a large improvement in data fit at a
-moderate cost in roughness. The curve drops steeply because you are making
-genuine progress: each step in $\lambda$ unlocks more signal.
+**Regime 1 — the horizontal arm (large $\lambda$):** The inversion is fitting
+the *signal* — the real, coherent pattern of surface displacement driven by
+fault slip. Each reduction in $\lambda$ buys a large improvement in data fit
+at a moderate cost in roughness. The curve moves steeply leftward because you
+are making genuine progress: each step in $\lambda$ unlocks more signal.
 
-**Regime 2 — the horizontal arm (small $\lambda$):** The signal has already
-been fit. Further reductions in $\lambda$ only let the inversion chase *noise*
+**Regime 2 — the vertical arm (small $\lambda$):** The signal has already been
+fit. Further reductions in $\lambda$ only let the inversion chase *noise*
 — random, spatially incoherent measurement errors. Fitting random noise is
 geometrically expensive: a spatially random function requires a very rough
-model. So for tiny gains in misfit, roughness explodes upward. The curve goes
-nearly flat because you are paying an enormous roughness price for almost no
-improvement in fit.
+model. So for tiny gains in misfit, roughness explodes upward. The curve
+shoots nearly vertically because you are paying an enormous roughness price
+for almost no improvement in fit.
 
 **The corner is the transition point between these two regimes** — the last
 good buy before the marginal cost of better data fit becomes prohibitive. That
