@@ -697,16 +697,8 @@ This is the standard formulation in nearly all published geodetic slip inversion
 
 # Additional Resources
 
-> **Textbook:** Aster, R. C., Borchers, B., & Thurber, C. H. (2019).
-> *Parameter Estimation and Inverse Problems* (3rd ed.). Academic Press.
-> The most accessible graduate-level text; excellent on regularization and the
-> L-curve with worked Python examples. Start here.
-
 > **Textbook:** Menke, W. (2018). *Geophysical Inverse Theory* (2nd ed.).
 > Princeton University Press. The standard graduate reference.
-
-> **Classic paper:** Hansen, P. C. (1992). Analysis of discrete ill-posed
-> problems by means of the L-curve. *SIAM Review*, 34(4), 561–580.
 
 > **Reference for this lecture:** Ide, S. (2007). Slip inversion. In
 > *Treatise on Geophysics*, Vol. 4, pp. 193–223. Elsevier. Sections 4.07.2–4.07.4
