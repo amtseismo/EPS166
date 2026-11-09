@@ -59,6 +59,7 @@ project:
 
     - title: Week 7 — Mass Movements
       children:	
+        - file: lectures/12_mass_movements
 
     - title: Week 8 — Volcano Deformation and Magma Migration
       children:	
