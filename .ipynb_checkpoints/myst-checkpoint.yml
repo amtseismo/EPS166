@@ -1,0 +1,83 @@
+# See docs at: https://mystmd.org/guide/frontmatter
+version: 1
+
+project:
+  id:
+  title: EPS 166 Crustal Deformation Course Materials
+  description: Notes and notebooks for EPS 166
+  keywords:
+    - earthquake
+    - seismology
+
+  toc:
+    # --- Intro ---
+    - file: intro.md
+
+    # --- Modules ---
+    - title: Week 0 — A Deforming Earth
+      children:
+        - file: lectures/00_intro
+		
+    - title: Week 1 — GNSS Positioning and Timeseries
+      children:
+        - file: lectures/01_GNSS1
+        - file: notebooks/01_gnss_positioning
+        - file: lectures/02_GNSS2
+        - file: notebooks/02_gnss_timeseries
+		
+    - title: Week 2 — Strain and the Seismic Cycle
+      children:		
+        - file: lectures/03_gnss_strain
+        - file: notebooks/03_gnss_strain	
+        - file: lectures/04_seismic_cycle
+        - file: notebooks/04_seismic_cycle	
+
+    - title: Week 3 — Short and long timescale Seismology
+      children:	
+        - file: lectures/05_seismology
+        - file: notebooks/05_seismology
+        - file: lectures/06_dems_lidar
+        - file: notebooks/06_wallace_creek
+		
+    - title: Week 4 — Satellite Remote Sensing
+      children:
+        - file: lectures/07_optical
+        - file: notebooks/07a_optical_false_color
+        - file: notebooks/07b_optical_pixel_tracking
+        - file: lectures/08_insar
+        - file: notebooks/08_insar
+
+    - title: Week 5 — Forward and Inverse Modeling
+      children:	
+        - file: lectures/09_forward_modeling
+        - file: notebooks/09_forward_modeling_lab
+        - file: lectures/10_inverse_problem
+        
+    - title: Week 6 — Slip Inversion
+      children:	
+        - file: notebooks/10_inverse_problem_lab
+
+    - title: Week 7 — Mass Movements
+      children:	
+        - file: lectures/12_mass_movements
+
+    - title: Week 8 — Volcano Deformation and Magma Migration
+      children:	
+	  
+    - title: Week 9 — Groundwater and Subsidence
+      children:	 
+	  
+    - title: Week 10 — Vertical Land Motion and Synthesis
+      children:	 
+	  
+    # --- References ---
+#    - title: References
+#      children:
+#        - file: bibliography
+
+site:
+  template: book-theme
+  options:
+    favicon: favicon.svg
+    logo: logo_ucdavis.png
+    style: _overrides/custom.css
