@@ -18,8 +18,6 @@ This lecture draws heavily on material provided by Ed Nissen (University of Vict
 
 # Digital Elevation Models
 
----
-
 ## What Is a DEM?
 
 A **digital elevation model (DEM)** is a digital dataset representing the elevation of the Earth's surface, sampled at regular horizontal spacing and georeferenced to known coordinates. It is simply a grid of numbers — elevation values at each pixel — that can be visualized, analyzed, and compared.
@@ -33,9 +31,7 @@ The distinction between DTM and DSM matters enormously for active tectonic appli
 
 ---
 
-## Uses in Active Tectonics
-
-### Geomorphic mapping of fault zones
+## Geomorphic mapping of fault zones
 
 The most direct application of DEMs in active tectonics is mapping the geomorphic expression of faults — the features in the landscape that record repeated earthquake rupture.
 
@@ -96,8 +92,6 @@ When aerial photogrammetry became available in the 1930s — making topography f
 ---
 
 # Stereophotogrammetry
-
----
 
 ## How Humans See Depth
 

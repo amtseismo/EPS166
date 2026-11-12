@@ -62,14 +62,15 @@ project:
         - file: lectures/12_mass_movements
         - file: notebooks/12_Oso_Landslide_DTMDifferencing
 
-
-    - title: Week 8 — Volcano Deformation and Magma Migration
+    - title: Week 8 — SSE Inversion and Subsidence
       children:	
+        - file: lectures/11_slow_slip
+        - file: notebooks/11_slow_slip_lab
 	  
-    - title: Week 9 — Groundwater and Subsidence
+    - title: Week 9 — Volcano Deformation I
       children:	 
 	  
-    - title: Week 10 — Vertical Land Motion and Synthesis
+    - title: Week 10 — Volcano Deformation II
       children:	 
 	  
     # --- References ---
