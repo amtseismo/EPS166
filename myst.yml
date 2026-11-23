@@ -70,6 +70,8 @@ project:
 	  
     - title: Week 9 — Volcano Deformation I
       children:	 
+        - file: lectures/15_volcano_deformation
+        - file: notebooks/15_volcano_deformation
 	  
     - title: Week 10 — Volcano Deformation II
       children:	 
