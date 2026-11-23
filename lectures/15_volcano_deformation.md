@@ -396,22 +396,7 @@ name: South Sister
 width: 700px
 alt: ERS interferogram showing 10 cm of uplift at a site 5 km west of South Sister volcano, Oregon. The bulls-eye is offset from any known volcanic vent.
 ---
-ERS interferogram (1998–2001) showing ~10 cm of LOS uplift ~5 km west of South Sister, Oregon (Wicks et al., 2002). The source was inferred at ~6.5 km depth. This case illustrates that InSAR can discover new hazards at apparently dormant systems.
-```
-
----
-
-## Ongoing Inflation at Domuyo, Argentina (2014–present)
-
-Domuyo, in northern Patagonia, is a large silicic system with no historic eruptions. ALOS-2 and Sentinel-1 InSAR data from 2014 onward show ongoing inflation at ~12 cm/yr LOS, adding up to ~60 cm of range change over four years (Lundgren et al., 2020). The deformation source is modeled as an **oblate ellipsoidal sill** (not a Mogi sphere) at ~6.5 km depth — a good example of how the choice of source model matters. This interferogram is used in the accompanying laboratory.
-
-```{figure} ../figures/03_domuyo_alos2.png
----
-name: Domuyo ALOS-2
-width: 760px
-alt: 3x3 grid of ALOS-2 L-band wrapped interferograms of Domuyo volcano, Argentina, spanning 2015-2018. Each panel shows an elliptical bulls-eye of inflation fringes centered on the volcano. The longest baseline interferogram (bottom center, Feb 2015 to Apr 2018) shows ~5 color cycles indicating approximately 50 cm of LOS uplift.
----
-ALOS-2 ascending interferograms (Path 34) of Domuyo volcano, Argentina, from Lundgren et al. (2020), Sci. Rep. 10, 11642 (CC BY 4.0). Re-wrapped at 10 cm per color cycle. The longest-baseline interferogram (bottom center, 2015–2018) shows ~5 fringes, corresponding to ~50 cm of LOS uplift at the peak. Source depth is ~6.5 km. Used in the accompanying laboratory.
+ERS interferogram (1995–2001) showing ~10 cm of LOS uplift ~5 km west of South Sister, Oregon (Wicks et al., 2002). The source was inferred at ~6.5 km depth. This case illustrates that InSAR can discover new hazards at apparently dormant systems.
 ```
 
 ---
@@ -431,44 +416,115 @@ In practice, the fastest way to determine inflation vs. deflation is to compare 
 
 ---
 
-# Inflation–Deflation Cycles
+# Inflation–Deflation Cycles at Kīlauea, Hawaiʻi
 
-## Kīlauea, Hawaiʻi
+## What are D–I cycles?
 
-Kīlauea is among the best-instrumented volcanoes on Earth, and its deformation record is one of the most complete in volcanology. The HVO network of tiltmeters, continuous GNSS, and InSAR has captured **repeating cycles of summit inflation followed by co-eruptive deflation** tied directly to eruptions at the summit and along the rift zones.
+At volcanoes with shallow, well-connected magma reservoirs, geodetic instruments record **deflation–inflation (D–I) cycles**: repeating oscillations in which the summit subsides and ground moves inward as magma drains, then recovers as supply continues. At Kīlauea, these cycles operate across multiple timescales and are recorded by the dense HVO network of tiltmeters and continuous GNSS at the summit.
 
-The inflation–deflation pattern reflects a relatively shallow (<5 km) magma reservoir beneath Halemaʻumaʻu crater. During quiescence, magma accumulates and the summit inflates. When an eruption begins — either at the summit or fed by dike intrusion into the East or Southwest Rift Zone — the reservoir depressurizes rapidly and the summit deflates.
-
-The three measurement types each reveal a different face of the same cycle. **Tiltmeters** on the caldera rim (within ~1–2 km of the epicenter, near the peak tilt radius $\rho = d/2$ for a ~2 km deep source) resolve the fastest events: hourly DRE oscillations, lava lake surges, and minute-scale precursors to vent collapses. **GNSS** stations integrate those rapid signals into the multi-year uplift and subsidence record, directly mapping $u_z$ and $u_\rho$ and providing the depth estimate via their ratio. **InSAR** captures the cumulative spatial field — the bulls-eye pattern — at whatever time span the interferogram spans, confirming that the deformation is symmetric and reservoir-like.
-
-```{figure} ../figures/03_kilauea_gnss.png
+```{figure} ../figures/15_kilauea_plumbing.png
 ---
-name: Kīlauea GNSS
-width: 760px
-alt: Several years of vertical and horizontal GNSS time series from stations on the Kīlauea caldera rim, showing repeated cycles of gradual inflation punctuated by rapid co-eruptive deflation steps tied to eruption events at the summit and rift zones.
+name: kilauea-plumbing
+width: 100%
+alt: A cross section of proposed magma plumbing system beneath the surface of Kīlauea. “H” marks the Halema‘uma‘u reservoir; “SC” marks the south caldera reservoir; “K” marks the Keanakāko‘i reservoir; “HKIT” notes a connection between the Halema‘uma‘u reservoir and Kīlauea Iki; SWRZ denotes Southwest Rift Zone. The exact depths and geometries of these connections are not well known, but this cross section represents one of the hypothesized configurations.
 ---
-GNSS time series from stations on the Kīlauea caldera rim showing repeated inflation–deflation cycles. Gradual inter-eruption inflation is punctuated by rapid co-eruptive deflation. The amplitude and duration of each cycle reflect the volume of magma erupted relative to the supply rate from the mantle source. Data from USGS Hawaiian Volcano Observatory.
+A cross section of proposed magma plumbing system beneath the surface of Kīlauea. “H” marks the Halema‘uma‘u reservoir; “SC” marks the south caldera reservoir; “K” marks the Keanakāko‘i reservoir; “HKIT” notes a connection between the Halema‘uma‘u reservoir and Kīlauea Iki; SWRZ denotes Southwest Rift Zone. The exact depths and geometries of these connections are not well known, but this cross section represents one of the hypothesized configurations.
+``` 
+
+The physical mechanism is straightforward in terms of the Mogi model. The shallow subcaldera magma reservoir (~2 km depth beneath Halemaʻumaʻu crater) acts as a pressure vessel connected to the East Rift Zone (ERZ) by a conduit. When magma flows toward the rift — either into an ongoing eruption or during an intrusion — pressure in the reservoir drops, and the overlying ground deflects inward and downward. When supply from depth exceeds outflow, pressure recovers and the ground re-inflates outward and upward. Because the source is shallow and roughly equidimensional, the deformation pattern is nearly circular and well-approximated by a Mogi point source.
+
+**D–I cycles at Kīlauea exist at several scales:**
+- **Long-term (months–years):** slow inflation during quiescence, rapid deflation during eruptions
+- **Short-term DRE events (hours–days):** discrete deflation–reinflation episodes tied to surges in ERZ lava output — summit briefly deflates as a magma pulse moves down-rift, then re-inflates as supply continues
+- **2018 collapse cycles (seconds to days):** the most dramatic and best-recorded expression of the cycle, discussed below
+
+---
+
+## The 2018 caldera collapse
+
+The 2018 lower ERZ eruption of Kīlauea produced the largest summit collapse since at least the 19th century, and the most detailed geodetic record of any caldera collapse ever collected (Anderson & Johanson, 2022). The eruption began on 30 April 2018 when magma intruded down-rift from Puʻuʻōʻō, reaching the lower ERZ surface 40 km from the summit on 3 May. As magma drained from the subcaldera reservoir toward the eruption site, the active lava lake in Halemaʻumaʻu crater withdrew at ~50 m/day and the surrounding ground began to subside.
+
+By 16 May, cumulative pressure reduction of ~17 MPa in the shallow subcaldera reservoir triggered roof rock failure, beginning the collapse. Over the following **78 days**, the new caldera grew to ~0.83 km³ in a series of **62 episodic collapse cycles**, with the caldera floor subsiding more than **500 m** at its deepest point. The entire sequence was recorded on 6 tiltmeters and more than 20 high-rate GNSS stations both inside and outside the growing caldera.
+
+```{figure} ../figures/15_kilauea_map.png
+---
+name: kilauea-map
+width: 100%
+alt: Multi-panel figure showing collapse cycles in GNSS and tilt data during the 2018 Kīlauea eruption. Top panels show intracaldera GNSS subsidence at stations NPIT and CALS dropping by meters per collapse event. Middle and lower panels show extracaldera GNSS displacement and tilt at stations CRIM, UWEV, and UWD displaying a repeating sawtooth pattern of abrupt outward offsets followed by gradual inward recovery. Individual collapse events are numbered 1 through 62.
+---
+Panel (a) Map of Kīlauea’s summit (left panel) and ERZ (bottom
+panel) with geodetic stations used in this study. GNSS reference sta-
+tion KOSM is shown in yellow. Background digital elevation model
+from August 2018, with 2018 collapse shaded in pink. Black cross
+denotes center of local coordinate system at 19.4073 N, 155.2784 W.
+Arrow denotes subsurface magma flow path from the summit to the
+lower East Rift Zone during the 2018 eruption. (b-c) Aerial photo-
+graphs looking southwest over the caldera on 18 June 2018. The larg-
+est slump block (out of sight to left) had not yet formed; the final cal-
+dera diameter was roughly twice that visible here. Some approximate
+station locations are indicated. USGS photos by K. Anderson.  From [Anderson & Johanson (2022)](https://doi.org/10.1007/s00445-022-01589-x).
+``` 
+
+---
+
+## The collapse cycle mechanism
+
+Each cycle had a repose time averaging 1.3 ± 0.5 days and followed a highly repeatable three-phase pattern (Anderson & Johanson, 2022):
+
+**Intercollapse (deflation phase):** Magma continued draining from the summit reservoir to feed the rift eruption, gradually reducing reservoir pressure. Ground outside the caldera moved inward and downward at a rate that decayed quasi-exponentially with a time constant τ ≈ 0.5 days. Seismicity built in increasingly intense swarms as faults were stressed toward failure.
+
+**Co-collapse (inflation offset):** At a critical stress threshold, fault-bounded roof rock blocks slumped downward into the reservoir in seconds — a piston-like collapse. This compressed the reservoir and **increased magma pressure by ~3 MPa per event** (Stage 2 collapses). Extracaldera stations responded with abrupt step-like **upward-and-outward** (inflationary) displacements of up to 20 cm horizontal and 10 cm vertical, with ground tilts exceeding 100 μrad. Each collapse generated VLP seismic energy equivalent to ~M5. The pressure increase drove higher rates of magma flow to the rift, producing surges in lava effusion of 160–350 m³/s.
+
+**Recovery:** Increased pressure stabilized the roof block. As magma drained again at elevated rates, deformation reversed, beginning the next intercollapse period.
+
+```{figure} ../figures/15_kilauea_collapse_cycles.png
+---
+name: kilauea-collapse-cycles
+width: 100%
+alt: Multi-panel figure showing collapse cycles in GNSS and tilt data during the 2018 Kīlauea eruption. Top panels show intracaldera GNSS subsidence at stations NPIT and CALS dropping by meters per collapse event. Middle and lower panels show extracaldera GNSS displacement and tilt at stations CRIM, UWEV, and UWD displaying a repeating sawtooth pattern of abrupt outward offsets followed by gradual inward recovery. Individual collapse events are numbered 1 through 62.
+---
+Collapse cycles in geodetic and earthquake data. All time series are caldera-radial and highpass-filtered except for caldera-block stations NPIT and CALS, which show vertical displacement with no highpass filter. GNSS time series are median filtered and data are decimated to 5 min for plotting. (a) Tilt at UWD over the full duration of the eruption. (b) From top to bottom: M2.5+ summit earthquake counts; subsidence of GNSS station located on a caldera block; and tilt (black lines) and displacements (red points) at extracaldera instruments. (c) From top to bottom: M2.5+ summit earthquake counts; subsidence of GNSS station located on the largest caldera slump block; tilt and displacement at nearby stations SDH and CRIM; and tilt and GNSS displacements at colocated instruments UWD and UWEV. Note different intercollapse evolution of UWEV/UWD and CRIM/SDH. From [Anderson & Johanson (2022)](https://doi.org/10.1007/s00445-022-01589-x).
 ```
 
-The 2018 lower East Rift Zone eruption provides the most dramatic recent example. As the eruption drained the shallow summit reservoir, the caldera floor subsided by roughly **500 m** over several weeks — one of the largest volcanic collapses observed in the modern instrumental record. InSAR captured this in extraordinary detail, with hundreds of centimeters of subsidence producing extremely dense fringe patterns that required special unwrapping strategies.
+The cycle is illustrated schematically below:
 
-```{figure} ../figures/03_kilauea_2018.png
+```{figure} ../figures/15_kilauea_conceptual_model.png
 ---
-name: Kīlauea 2018 collapse
-width: 760px
-alt: Sentinel-1 interferogram of the Kīlauea summit showing dense concentric fringes from the 2018 caldera collapse, with hundreds of centimeters of subsidence. Time series panel shows the step-wise nature of the collapse progression over weeks of episodic events.
+name: kilauea-conceptual-model
+width: 100%
+alt: Three-panel schematic cross-section showing the Kīlauea subcaldera magma reservoir and overlying roof rock during three phases of the collapse cycle. Left panel shows precollapse: ground subsides inward-downward as magma drains to the rift. Middle panel shows co-collapse: roof rock block slumps into reservoir, arrows show outward-upward ground motion on extracaldera GNSS. Right panel shows intercollapse: reservoir pressure decreases as magma drains, ground again moves inward-downward. The cycle repeats 62 times.
 ---
-Sentinel-1 interferogram of the Kīlauea summit area during the 2018 lower East Rift Zone eruption. Each step in the caldera collapse corresponded to a discrete subsidence event tied to the eruption rhythm. Total subsidence exceeded 500 m, making this one of the largest instrumentally recorded volcanic collapses. After Neal et al. (2019) and Anderson et al. (2019).
+Schematic conceptual model of episodic collapse into the subcaldera (Halema‘uma‘u) reservoir. Blue arrows show ground displacements; insets show corresponding trend of GNSS and tilt time
+series outside of the caldera. Preexisting 1500 CE caldera, Stage 1 collapses, and collapsed lava lake vent are omitted for clarity. The Stage 1 collapse mechanism is hypothesized to be similar to Stage 2 (shown), except that faults were not through-going. (a) Precollapse subsidence caused by magma withdrawal. (b) Abrupt subsidence of roof rock along ring faults. (c) Gradual withdrawal of magma between collapse events (some ring fault slip may have occurred as well). 62 cycles of (b) and (c) were recorded. From [Anderson & Johanson (2022)](https://doi.org/10.1007/s00445-022-01589-x).
 ```
 
-The Kīlauea record is pedagogically valuable for several reasons. The **timescale is rapid** — days to months rather than years — making it possible to watch the full inflation–deflation cycle evolve in near real time. The source geometry is well-constrained from decades of inversions (shallow reservoir at ~1–3 km depth, well-approximated by a Mogi source for the inflation phase). And all three measurement types operate simultaneously, so students can compare what tiltmeters, GNSS, and InSAR see from the same source event. The 2018 collapse required more complex models for the collapse mechanics, but the pre-collapse inflation and much of the co-collapse subsidence are well-described by Mogi geometry.
+### What tiltmeters, GNSS, and InSAR each see
 
-> Compare the Kīlauea inflation–deflation cycle (months timescale, shallow source, eruption-driven) to the Domuyo case (multi-year timescale, 6.5 km depth, no eruption). What does the timescale of a deformation cycle tell you about the depth and permeability of the magmatic system?
+The 2018 data illustrate how the three measurement types sample different aspects of the same D–I cycle:
+
+**Tiltmeters** (resolution ~0.5 μrad, sampling rate 1/min) resolved the abrupt co-collapse step offsets of up to ~100 μrad per event and the quasi-exponential intercollapse decay — essentially a real-time readout of magma reservoir pressure. The tilt record shows the full progression from smooth precollapse subsidence through 62 sawtooth cycles to cessation of collapse.
+
+**GNSS** (5-second high-rate solutions) provided three-component absolute displacement, confirming that offsets were directed radially away from the reservoir. The cumulative record shows long-term net inward and downward motion of extracaldera stations, with individual cycle amplitudes of up to 20 cm. The ratio of horizontal-to-vertical displacement ($u_\rho/u_z$) was much higher during collapses than during precollapse subsidence — a diagnostic of the piston-like collapse geometry vs. smooth reservoir draining.
+
+**InSAR** captures the cumulative deformation over the full collapse period in a single image, confirming the spatial extent and rough symmetry of subsidence.
+
+```{figure} ../figures/15_kilauea_tilt_gnss_overview.png
+---
+name: kilauea-tilt-gnss-overview
+width: 100%
+alt: Four-panel overview time series spanning April through August 2018. Top panels show tilt and GNSS displacement at extracaldera stations including UWD, SMC, SDH, UWEV, CRIM, AHUP, and BYRL. The time series show a transition from smooth precollapse subsidence to a regular sawtooth pattern of collapse cycles, then cessation of collapse in early August. The lower panel shows highpass-filtered data highlighting the repeating cycle structure. Panel labels indicate the M6.9 earthquake, first collapse, first large collapse, and last collapse.
+---
+Overview tilt and GNSS time series spanning the 2018 Kīlauea eruption (Anderson & Johanson, 2022, Fig. 3). **(a)** Caldera-radial horizontal displacements and tilt at extracaldera stations. Step-like co-collapse offsets are superimposed on long-term subsidence. **(b)** Vertical GNSS: stations on collapse blocks (NPIT, CALS) subsided by tens of meters; extracaldera stations subsided more smoothly. **(d)** Highpass-filtered data highlighting the repeating sawtooth cycle structure. The transition from Stage 1 (subsurface collapse, 16–26 May) to Stage 2 (broad surface faulting, 29 May – 2 August) is marked.
+```
+
+> The collapse cycles produce "inflationary" offsets on extracaldera instruments even though the caldera floor is subsiding. Explain this apparent paradox using the piston-collapse model and the Mogi source framework. Under what conditions would the extracaldera tilt signal look the same as ordinary summit inflation?
+
+> Compare the Kīlauea D–I cycle (days timescale, ~2 km depth, eruption-driven) to the Domuyo case (multi-year timescale, 6.5 km depth, no eruption). What does the timescale of a deformation cycle tell you about source depth and the magmatic supply rate relative to the conduit conductivity?
 
 Inflation–deflation cycles are also documented at:
 - **Campi Flegrei** (Italy): decadal cycles with ~1.8 m of inflation in 1982–1984 prompting mass evacuation; linked to hydrothermal and magmatic pressure changes
 - **Yellowstone** caldera (Wyoming): decimeter-scale cycles driven by hydrothermal fluid migration and episodic magma replenishment
-- **Fernandina** (Galápagos): multiple eruption–deflation cycles documented by InSAR, with rapid co-eruptive subsidence similar in character to Kīlauea
+- **Fernandina** (Galápagos): multiple eruption–deflation cycles documented by InSAR, with rapid co-eruptive subsidence driven by the same piston-collapse mechanism first recognized there in 1968
 
 ---
 
@@ -494,18 +550,6 @@ The next lecture addresses dike intrusion geometries, which produce distinctly a
 - Surface tilt $\tau = -\partial u_z/\partial\rho = (3d/(\rho^2+d^2))\,u_\rho$ is directly computable from the Mogi displacements. It is zero above the source, peaks at $\rho = d/2$, and is the fastest-responding observable.
 - GNSS, tiltmeters, and InSAR all sample the same Mogi deformation field at different spatial and temporal scales: tilt resolves hourly transients, GNSS integrates displacement over years, InSAR maps the full spatial pattern.
 - Volcanic inflation and deflation have been documented at dozens of volcanoes worldwide. InSAR has revealed unrest at previously unmonitored systems.
-
----
-
-# Laboratory
-
-Students will implement the Mogi forward model in Python and use it to explore the relationship between source parameters and observable deformation:
-
-- implement the Mogi displacement equations and verify the depth–width scaling relationship
-- derive and plot the tilt profile; confirm that maximum tilt is at $\rho = d/2$ and that tilt is proportional to horizontal displacement
-- generate and display synthetic wrapped interferograms
-- explore how incidence angle and look direction affect the LOS signal
-- invert a digitized radial LOS profile from an ALOS-2 interferogram of Domuyo volcano to recover source depth and volume change rate
 
 ---
 
@@ -536,7 +580,3 @@ Students will implement the Mogi forward model in Python and use it to explore t
 > **Kīlauea InSAR:** Poland, M. P., Miklius, A., & Montgomery-Brown, E. K. (2014). Magma supply, storage, and transport at shield-stage Hawaiian volcanoes. In *Characteristics of Hawaiian Volcanoes*, USGS Professional Paper 1801. — Comprehensive treatment of Kīlauea's deformation record and reservoir structure.
 
 > **South Sister:** Wicks, C. W., et al. (2002). Uplift, thermal unrest and magma intrusion at the South Sister volcano, Oregon. *Science*, 318, 1333–1336.
-
-> **Domuyo:** Lundgren, P., et al. (2020). The dynamics of large silicic systems from satellite remote sensing observations: the intriguing case of Domuyo volcano, Argentina. *Sci. Rep.*, 10, 11642. (CC BY 4.0)
-
-> **Interactive lab tool:** A browser-based Mogi explorer and Domuyo inverse problem is available at the course website. Use it to build intuition before the Python laboratory.
