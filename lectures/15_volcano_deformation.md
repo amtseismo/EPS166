@@ -13,7 +13,6 @@ In this lecture, we will:
 - describe how GNSS, tiltmeters, and InSAR each sample the same deformation field differently
 - convert displacement to interferometric phase and read wrapped fringes
 - survey real examples of volcanic inflation and deflation
-- recognize the depth–volume trade-off that limits single-track inversions
 
 The next lecture addresses dike intrusion. Here we focus exclusively on roughly axisymmetric inflation and deflation from pressurized reservoirs.
 
@@ -40,9 +39,20 @@ Interpretation of seismogenic features at Mount St. Helens. (a) All earthquake l
 
 ---
 
-## The Elastic Half-Space
+# The Mogi Point Source
 
 We model the crust as a **homogeneous, isotropic, elastic half-space**: a solid occupying all space below the plane $z = 0$, with the free surface at $z = 0$. A pressure source is buried at depth $d$.
+
+```{figure} ../figures/15_mogi_schematic.png
+---
+name: Mogi schematic
+width: 420px
+alt: Cross-section diagram showing a pressurized spherical source at depth d, with arrows indicating radial outward and upward surface displacements. The displacement field is axially symmetric.
+---
+Geometry of a spherical magma chamber. The chamber has radius a, with center at depth d
+beneath the free surface, x3 = 0. r denotes the radial distance from the center of the magma chamber,
+whereas ρ marks the distance from the center of symmetry along the free surface.
+```
 
 This model is idealized. The crust is heterogeneous, partly viscoelastic, and riddled with faults and fluids. Nevertheless, elastic half-space models explain the first-order geometry of volcanic deformation at most volcanoes and serve as the standard starting point for source inversions.
 
@@ -56,30 +66,15 @@ The relevant elastic parameters are:
 
 For $\nu = 0.25$, the Lamé parameters satisfy $\lambda = \mu$.
 
----
-
-# The Mogi Point Source
-
-## Derivation
-
 Mogi (1958) derived the surface displacements due to a **small pressurized sphere of radius $a$** embedded at depth $d$ in an elastic half-space. The key simplification is that the sphere is small compared to its depth: $a \ll d$. In this limit, the sphere acts as a **point source** and the solution depends only on the **volume change** $\Delta V$, not on the separate values of $a$ and $\Delta p$.
 
 The derivation follows from the solution for a center of dilatation (a nuclei of strain) in a half-space, as given in Segall (2010), Chapter 7. The key result is a displacement field that is axially symmetric about the vertical axis through the source.
 
+---
+
 ## Surface Displacement Field
 
-```{figure} ../figures/15_mogi_schematic.png
----
-name: Mogi schematic
-width: 420px
-alt: Cross-section diagram showing a pressurized spherical source at depth d, with arrows indicating radial outward and upward surface displacements. The displacement field is axially symmetric.
----
-Geometry of a spherical magma chamber. The chamber has radius a, with center at depth d
-beneath the free surface, x3 = 0. r denotes the radial distance from the center of the magma chamber,
-whereas ρ marks the distance from the center of symmetry along the free surface.
-```
-
-At a surface point at horizontal distance $\rho$ from the source directly above it, the displacements are (Segall, 2010, eq. 7.14):
+At a surface point at horizontal distance $\rho$ from the source directly above it, the displacements are ([Segall (2010)](https://press.princeton.edu/books/hardcover/9780691133027/earthquake-and-volcano-deformation), eq. 7.14):
 
 $$
 u_\rho(\rho) = \frac{(1-\nu)}{\pi} \frac{\Delta V \cdot \rho}{\left(\rho^2 + d^2\right)^{3/2}}
@@ -90,6 +85,15 @@ u_z(\rho) = \frac{(1-\nu)}{\pi} \frac{\Delta V \cdot d}{\left(\rho^2 + d^2\right
 $$
 
 where $\rho$ is horizontal radial distance from the source epicenter, $u_\rho$ is horizontal radial displacement (positive outward), $u_z$ is vertical displacement (positive upward), $\Delta V$ is source volume change (positive = inflation), and $\nu$ is Poisson's ratio. Note that Segall uses $\rho$ for surface radial distance and reserves $r$ for the 3D distance from the center of the spherical cavity.
+
+```{figure} ../figures/15_mogi.png
+---
+name: Mogi profiles
+width: 460px
+alt: First-order approximation to surface displacements from a pressurized spherical magma chamber.
+---
+First-order approximation to surface displacements from a pressurized spherical magma chamber.
+```
 
 For $\nu = 0.25$:
 
@@ -105,9 +109,11 @@ $$
 
 This is a key result: the horizontal and vertical displacements are equal when $\rho = d$, and horizontal motion exceeds vertical beyond that radius. This ratio provides a geometric constraint on source depth that is independent of $\Delta V$.
 
+---
+
 ## Depth–Width Scaling
 
-The vertical displacement peaks directly above the source (Segall, 2010, following eq. 7.14):
+The vertical displacement peaks directly above the source ([Segall (2010)](https://press.princeton.edu/books/hardcover/9780691133027/earthquake-and-volcano-deformation), following eq. 7.14):
 
 $$
 u_z^{\max} = u_z(\rho=0) = \frac{(1-\nu)\,\Delta V}{\pi\, d^2}
@@ -125,15 +131,6 @@ This gives a practical workflow for first-order depth estimation from an interfe
 1. Measure $\rho_{1/2}$ — the surface radial distance where the LOS signal is half its peak value.
 2. Estimate depth: $d \approx \rho_{1/2} / 0.77$.
 3. Estimate volume change from the peak displacement and the estimated depth.
-
-```{figure} ../figures/15_mogi.png
----
-name: Mogi profiles
-width: 460px
-alt: First-order approximation to surface displacements from a pressurized spherical magma chamber.
----
-First-order approximation to surface displacements from a pressurized spherical magma chamber.
-```
 
 ---
 
